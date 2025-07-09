@@ -1,3 +1,5 @@
 .env
 setup_env.sh
 setup_env.py
+raw-wiktextract-data.jsonl
+fr-extract.jsonl

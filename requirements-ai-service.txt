@@ -1,0 +1,13 @@
+torch>=1.9.0
+transformers>=4.21.0
+librosa>=0.9.0
+soundfile>=0.11.0
+fastapi>=0.95.0
+uvicorn[standard]>=0.20.0
+pydantic>=1.10.0
+gtts>=2.3.0
+googletrans==4.0.0rc1
+Levenshtein>=0.20.0
+numpy>=1.21.0
+aiofiles>=22.0.0
+python-multipart>=0.0.6 

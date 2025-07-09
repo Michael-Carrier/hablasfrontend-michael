@@ -1,0 +1,28 @@
+[Unit]
+Description=Hablas AI Service
+After=network.target
+
+[Service]
+Type=simple
+User=nas
+WorkingDirectory=/home/nas/Hablas/
+Environment=AI_SERVICE_PORT=8001
+Environment=AI_SERVICE_HOST=0.0.0.0
+Environment=LOG_LEVEL=info
+Environment=CUDA_VISIBLE_DEVICES=0
+ExecStart=/usr/bin/python3 -u /home/nas/Hablas/ai_service.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hablas-ai
+
+# Security settings (relaxed for home directory access)
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target 
+
+
+

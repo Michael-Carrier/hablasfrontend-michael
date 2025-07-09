@@ -1,0 +1,32 @@
+[Unit]
+Description=Hablas Main Server
+After=network.target hablas-ai.service
+Requires=hablas-ai.service
+
+[Service]
+Type=simple
+User=your_username
+Group=your_group
+WorkingDirectory=/path/to/your/hablas/main/server
+Environment=PATH=/path/to/your/python/venv/bin
+Environment=AI_SERVICE_URL=http://localhost:8001
+Environment=STRIPE_SECRET_KEY=your_stripe_key
+Environment=BUG_REPORT_EMAIL_USER=your_email
+Environment=BUG_REPORT_EMAIL_PASSWORD=your_password
+Environment=BUG_REPORT_TO_EMAIL=your_bug_report_email
+ExecStart=/path/to/your/python/venv/bin/python serverv4_1.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hablas-main
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/path/to/your/hablas/main/server
+
+[Install]
+WantedBy=multi-user.target 

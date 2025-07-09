@@ -1585,3 +1585,325 @@ flex-direction: column;
     grid-template-columns: none !important;
     gap: 0 !important;
 }
+
+/* Additional styles for pagele functionality */
+.hold-button {
+    margin-top: 10px;
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    transition: background-color 0.2s;
+}
+
+.hold-button:active {
+    background-color: #0056b3;
+}
+
+.sentence-info-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Tip section styles */
+.tip-amounts {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+}
+
+.tip-button {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tip-button:hover {
+    background: #f0f0f0;
+}
+
+#tip-custom {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+#custom-tip {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#payment-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9001;
+    overflow-y: auto;
+}
+
+#payment-modal .modal-content {
+    background: white;
+    margin: 15% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    overflow-y: auto;
+}
+
+#payment-element {
+    margin: 20px 0;
+}
+
+#submit-payment {
+    background: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+#submit-payment:hover {
+    background: #45a049;
+}
+
+#payment-message {
+    margin-top: 10px;
+    color: #666;
+}
+
+/* Mode selection styles */
+.mode-container {
+    display: none;
+}
+
+.mode-container.active {
+    display: block;
+}
+
+/* Bug report button styling */
+#found-bug {
+    background-color: #ff6b6b !important;
+    color: white !important;
+    border: 1px solid #ff5252 !important;
+}
+
+#found-bug:hover {
+    background-color: #ff5252 !important;
+}
+
+/* Subscription section styles */
+.subscription-section {
+    border-top: 1px solid #ccc;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.subscription-status {
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.subscription-status.active {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.subscription-status.inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.subscription-status.pending {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.subscription-button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 5px 0;
+    transition: background-color 0.3s;
+}
+
+.subscription-button.subscribe {
+    background-color: #28a745;
+    color: white;
+}
+
+.subscription-button.subscribe:hover {
+    background-color: #218838;
+}
+
+.subscription-button.cancel {
+    background-color: #dc3545;
+    color: white;
+}
+
+.subscription-button.cancel:hover {
+    background-color: #c82333;
+}
+
+.subscription-button.disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#subscription-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9002;
+    overflow-y: auto;
+}
+
+#subscription-modal .modal-content {
+    background: white;
+    margin: 10% auto;
+    padding: 25px;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 10px;
+    overflow-y: auto;
+}
+
+.subscription-plan {
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 15px 0;
+    text-align: center;
+    transition: border-color 0.3s;
+}
+
+.subscription-plan.featured {
+    border-color: #28a745;
+    background-color: #f8fff9;
+}
+
+.plan-price {
+    font-size: 2em;
+    font-weight: bold;
+    color: #28a745;
+    margin: 10px 0;
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+}
+
+.plan-features li {
+    padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.plan-features li:before {
+    content: "✓ ";
+    color: #28a745;
+    font-weight: bold;
+}
+
+/* Admin section styles */
+.admin-section {
+    border-top: 1px solid #ccc;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.admin-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.admin-controls div {
+    flex: 1;
+    margin-bottom: 10px;
+}
+
+.admin-controls label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.admin-controls input[type="text"],
+.admin-controls input[type="number"],
+.admin-controls select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.admin-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.admin-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.admin-button.grant {
+    background-color: #28a745;
+    color: white;
+}
+
+.admin-button.revoke {
+    background-color: #dc3545;
+    color: white;
+}
+
+.admin-button.check {
+    background-color: #ffc107;
+    color: white;
+}
+
+#admin-message {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    display: none;
+}

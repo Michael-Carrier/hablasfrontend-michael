@@ -11,3 +11,5 @@ python-Levenshtein
 googletrans==4.0.0-rc1
 pillow>=10.0.0
 gtts
+orjson
+fastapi uvicorn torch transformers librosa googletrans gtts levenshtein aiofiles

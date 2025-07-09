@@ -69,7 +69,6 @@ EMAIL_PASSWORD = os.environ.get('BUG_REPORT_EMAIL_PASSWORD')  # Your email passw
 BUG_REPORT_TO_EMAIL = os.environ.get('BUG_REPORT_TO_EMAIL', EMAIL_USER)  # Where to send bug reports
 
 WEBSOCKET_LOG_FILE = "websocket_activity.log"
-WEBSOCKET_LOG = open(WEBSOCKET_LOG_FILE, "a")
 db = None
 interface_language_json = json.load(open("interface_languages_translated.json"))
 language_dict = {
@@ -1021,9 +1020,13 @@ async def handle_connection(websocket):
         if task == "stt":
             dtowrite["received"]["blob"] = "REDACTED"
             dtowrite["sent"] = message_returned
-        WEBSOCKET_LOG.write(json.dumps(dtowrite) + "\n")
-        WEBSOCKET_LOG.flush()
-        print("[SERVER] Client disconnected Log writte")
+        try:
+            with open(WEBSOCKET_LOG_FILE, "a") as log_file:
+                log_file.write(json.dumps(dtowrite) + "\n")
+        except Exception as log_e:
+            print(f"[CRITICAL_LOGGING_ERROR] Failed to write to websocket log: {log_e}")
+            print(f"[CRITICAL_LOGGING_ERROR_DATA_PREVIEW] Task: {task}, IP: {client_ip}, Error: {str(error_message)[:100]}")
+        print("[SERVER] Client disconnected")
 
 # Add a function to preload all models
 def preload_all_models():
