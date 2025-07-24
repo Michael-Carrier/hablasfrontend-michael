@@ -152,3 +152,32 @@
 {"time": 1752057928.7897632, "ip": "127.0.0.1", "received": {"task": "get_subscription_status", "token": "22a8bf00-d74a-4be2-99c0-84c2de0267cb", "ip": "127.0.0.1"}}
 {"time": 1752057933.7365377, "ip": "127.0.0.1", "received": {"task": "get_pagele_list", "token": "22a8bf00-d74a-4be2-99c0-84c2de0267cb", "ip": "127.0.0.1"}}
 {"time": 1752057937.3691585, "ip": "127.0.0.1", "received": {"task": "init_pagele", "pagele_filename": "El Amor En Los Tiempos Del Colera.json", "language": "espagnol", "index": 0, "token": "22a8bf00-d74a-4be2-99c0-84c2de0267cb", "ip": "127.0.0.1"}}
+{"time": 1752253882.1462462, "ip": "127.0.0.1", "received": {"task": "login", "username": "jason.carrier@gmail.com", "password": "test", "ip": "127.0.0.1"}}
+{"time": 1752253893.0898976, "ip": "127.0.0.1", "received": {"task": "get_subscription_status", "token": null, "ip": "127.0.0.1"}}
+{"time": 1752253894.9274316, "ip": "127.0.0.1", "received": {"task": "get_pagele_list", "token": null, "ip": "127.0.0.1"}}
+{"time": 1752253901.8112867, "ip": "127.0.0.1", "received": {"task": "init_pagele", "pagele_filename": "El Amor En Los Tiempos Del Colera.json", "language": "espagnol", "index": 0, "token": null, "ip": "127.0.0.1"}}
+{"time": 1752253907.5730355, "ip": "127.0.0.1", "received": {"task": "get_books", "ip": "127.0.0.1"}}
+{"time": 1752253909.7531188, "ip": "127.0.0.1", "received": {"task": "get_pagele_list", "token": null, "ip": "127.0.0.1"}}
+{"time": 1752254715.8230755, "ip": "127.0.0.1", "received": {"task": "login", "username": "jason.carrier@gmail.com", "password": "test", "ip": "127.0.0.1"}}
+{"time": 1752254721.9523218, "ip": "127.0.0.1", "received": {"task": "get_subscription_status", "token": null, "ip": "127.0.0.1"}}
+{"time": 1752254730.8098843, "ip": "127.0.0.1", "received": {"task": "get_pagele_list", "token": null, "ip": "127.0.0.1"}}
+{"time": 1752254734.817372, "ip": "127.0.0.1", "received": {"task": "init_pagele", "pagele_filename": "El Amor En Los Tiempos Del Colera.json", "language": "espagnol", "index": 0, "token": null, "ip": "127.0.0.1"}}
+{"time": 1752254753.9401395, "ip": "127.0.0.1", "received": {"task": "login", "username": "jason.carrier@gmail.com", "password": "test", "ip": "127.0.0.1"}}
+{"time": 1752254760.476879, "ip": "127.0.0.1", "received": {"task": "get_subscription_status", "token": null, "ip": "127.0.0.1"}}
+{"time": 1752254762.8262143, "ip": "127.0.0.1", "received": {"task": "get_pagele_list", "token": null, "ip": "127.0.0.1"}}
+{"time": 1752254765.2127, "ip": "127.0.0.1", "received": {"task": "init_pagele", "pagele_filename": "El Amor En Los Tiempos Del Colera.json", "language": "espagnol", "index": 0, "token": null, "ip": "127.0.0.1"}}
+{"time": 1752254882.6160548, "ip": "127.0.0.1", "received": {"task": "login", "username": "jason.carrier@gmail.com", "password": "test", "ip": "127.0.0.1"}}
+{"time": 1752254887.8098936, "ip": "127.0.0.1", "received": {"task": "get_subscription_status", "token": "91281bb9-d073-4cd3-aa15-b24b5a2d98f1", "ip": "127.0.0.1"}}
+{"time": 1752254894.1242428, "ip": "127.0.0.1", "received": {"task": "get_pagele_list", "token": "91281bb9-d073-4cd3-aa15-b24b5a2d98f1", "ip": "127.0.0.1"}}
+{"time": 1752254896.2442772, "ip": "127.0.0.1", "received": {"task": "init_pagele", "pagele_filename": "El Amor En Los Tiempos Del Colera.json", "language": "espagnol", "index": 0, "token": "91281bb9-d073-4cd3-aa15-b24b5a2d98f1", "ip": "127.0.0.1"}}
+{"time": 1752673007.4823678, "ip": "127.0.0.1", "received": {"task": "verify_token", "token": "91281bb9-d073-4cd3-aa15-b24b5a2d98f1", "ip": "127.0.0.1"}}
+{"time": 1752673007.553534, "ip": "127.0.0.1", "received": {"task": "get_subscription_status", "token": "91281bb9-d073-4cd3-aa15-b24b5a2d98f1", "ip": "127.0.0.1"}}
+{"time": 1752673011.9187174, "ip": "127.0.0.1", "received": {"task": "logout", "username": "", "ip": "127.0.0.1"}}
+{"time": 1753179154.6733677, "ip": "127.0.0.1", "received": {"task": "verify_token", "token": "f0dc5093-c6cd-47a8-9858-10f32c0b4e8c", "ip": "127.0.0.1"}}
+{"time": 1753179165.198905, "ip": "127.0.0.1", "received": {"task": "login", "username": "jason.carrier@gmail.com", "password": "test", "ip": "127.0.0.1"}}
+{"time": 1753179165.2849917, "ip": "127.0.0.1", "received": {"task": "get_subscription_status", "token": "033ca37c-dde2-43df-8698-f301549a079c", "ip": "127.0.0.1"}}
+{"time": 1753179168.6126297, "ip": "127.0.0.1", "received": {"task": "get_pagele_list", "token": "033ca37c-dde2-43df-8698-f301549a079c", "ip": "127.0.0.1"}}
+{"time": 1753179174.8769348, "ip": "127.0.0.1", "received": {"task": "init_pagele", "pagele_filename": "El Amor En Los Tiempos Del Colera.json", "language": "espagnol", "index": 0, "token": "033ca37c-dde2-43df-8698-f301549a079c", "ip": "127.0.0.1"}}
+{"time": 1753179191.491423, "ip": "127.0.0.1", "received": {"task": "verify_token", "token": "033ca37c-dde2-43df-8698-f301549a079c", "ip": "127.0.0.1"}}
+{"time": 1753179191.5769835, "ip": "127.0.0.1", "received": {"task": "get_subscription_status", "token": "033ca37c-dde2-43df-8698-f301549a079c", "ip": "127.0.0.1"}}
+{"time": 1753179194.6529305, "ip": "127.0.0.1", "received": {"task": "logout", "username": "", "ip": "127.0.0.1"}}

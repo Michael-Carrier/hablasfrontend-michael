@@ -2026,20 +2026,20 @@ async def main():
     import atexit
     atexit.register(cleanup)
     
-    # Create SSL context
+    """ # Create SSL context
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     ssl_context.load_cert_chain(
         '/media/nas/SSLCerts/carriertech.uk/fullchain.pem',
         '/media/nas/SSLCerts/carriertech.uk/privkey.pem'
-    )
+    )"""
 
     # Start the WebSocket server with SSL
     async with websockets.serve(
         handle_connection,
         "0.0.0.0",  # Changed from localhost to accept external connections
         8675,
-        ssl=ssl_context,
-        origins=["https://hablas.app", "https://carriertech.uk",  "http://localhost:8000", "http://127.0.0.1:8000"],  # Specify allowed origins here
+        #ssl=ssl_context,
+        origins=["https://hablas.app", "https://carriertech.uk",  "http://localhost:8000", "http://127.0.0.1:8000", "http://localhost:8008"],  # Specify allowed origins here
         max_size=10 * 1024 * 1024  # Allow up to 10MB messages
     ):
         print("WebSocket server started on wss://carriertech.uk:8675")

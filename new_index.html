@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -6,7 +7,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
 <link href="https://fonts.googleapis.com/css2%3Ffamily=Lato:wght@400%3B700&amp;family=Roboto:wght@400%3B700&amp;family=Quicksand:wght@400%3B700&amp;family=Montserrat:wght@400%3B700&amp;display=swap.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?ver=1.1">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -831,8 +832,8 @@
 
         // WebSocket Connection
         function createWebSocketConnection() {
-            //const socket = new WebSocket('wss://carriertech.uk:8675');
-            const socket = new WebSocket('ws://localhost:8675');
+            const socket = new WebSocket('wss://carriertech.uk:8675');
+            //const socket = new WebSocket('ws://localhost:8675');
             
             socket.addEventListener('open', (event) => {
                 console.log('WebSocket connection established');

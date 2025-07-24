@@ -43,9 +43,17 @@ def translate_interface():
     }
     
     translator = Translator()
-    result = {'fr': data['fr']}  # Start with English
     
-    # Save English to its own file first
+    # Load existing translations if available
+    translated_file = 'interface_languages_translated.json'
+    if os.path.exists(translated_file):
+        with open(translated_file, 'r', encoding='utf-8') as f:
+            result = json.load(f)
+        print(f"Loaded existing translations from {translated_file}")
+    else:
+        result = {'fr': data['fr']}  # Start with French
+    
+    # Save French to its own file first
     with open(f'{output_dir}/fr.json', 'w', encoding='utf-8') as f:
         json.dump(data['fr'], f, ensure_ascii=False, indent=4)
     
@@ -57,40 +65,44 @@ def translate_interface():
         completed += 1
         print(f"[{completed}/{total_languages}] Translating to {lang_name} ({lang_code})...")
         
-        # Check if this language was already translated
+        # Get existing translations for this language
+        translated_strings = result.get(lang_code, {})
+        
+        # Find new keys that need translation
+        new_keys_to_translate = {k: v for k, v in en_strings.items() if k not in translated_strings}
+        
+        if not new_keys_to_translate:
+            print(f"  No new keys to translate for {lang_name}. Skipping.")
+            continue
+        
+        print(f"  Found {len(new_keys_to_translate)} new keys to translate for {lang_name}.")
+        
+        for key, value in new_keys_to_translate.items():
+            # Skip appTitle as requested
+            if key == 'appTitle':
+                translated_strings[key] = 'Hablas'
+                continue
+                
+            try:
+                # Add delay to avoid hitting rate limits
+                time.sleep(0.5)
+                translation = translator.translate(value, src='fr', dest=lang_code)
+                translated_strings[key] = translation.text
+                print(f"  Translated: {key} '{value}' to '{translation.text}'")
+            except Exception as e:
+                print(f"  Error translating {key} to {lang_name}: {e}")
+                translated_strings[key] = value  # Fallback to French
+        
+        # Save this language to its own file
         lang_file = f'{output_dir}/{lang_code}.json'
-        if os.path.exists(lang_file):
-            print(f"  Found existing translation for {lang_name}, loading from file...")
-            with open(lang_file, 'r', encoding='utf-8') as f:
-                translated_strings = json.load(f)
-        else:
-            translated_strings = {}
-            
-            for key, value in en_strings.items():
-                # Skip appTitle as requested
-                if key == 'appTitle':
-                    translated_strings[key] = 'Hablas'
-                    continue
-                    
-                try:
-                    # Add delay to avoid hitting rate limits
-                    time.sleep(0.5)
-                    translation = translator.translate(value, src='fr', dest=lang_code)
-                    translated_strings[key] = translation.text
-                    print(f"  Translated: {key}")
-                except Exception as e:
-                    print(f"  Error translating {key} to {lang_name}: {e}")
-                    translated_strings[key] = value  # Fallback to English
-            
-            # Save this language to its own file
-            with open(lang_file, 'w', encoding='utf-8') as f:
-                json.dump(translated_strings, f, ensure_ascii=False, indent=4)
-            print(f"  Saved {lang_name} translation to {lang_file}")
+        with open(lang_file, 'w', encoding='utf-8') as f:
+            json.dump(translated_strings, f, ensure_ascii=False, indent=4)
+        print(f"  Saved {lang_name} translation to {lang_file}")
         
         result[lang_code] = translated_strings
     
     # Save the combined result
-    with open('interface_languages_translated.json', 'w', encoding='utf-8') as f:
+    with open(translated_file, 'w', encoding='utf-8') as f:
         json.dump(result, f, ensure_ascii=False, indent=4)
     
     print(f"\nTranslation completed!")
@@ -99,4 +111,4 @@ def translate_interface():
     print(f"- Total languages processed: {total_languages}")
 
 if __name__ == "__main__":
-    translate_interface() 
+    translate_interface()

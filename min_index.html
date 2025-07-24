@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
+<link href="https://fonts.googleapis.com/css2%3Ffamily=Lato:wght@400%3B700&amp;family=Roboto:wght@400%3B700&amp;family=Quicksand:wght@400%3B700&amp;family=Montserrat:wght@400%3B700&amp;display=swap.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css?ver=1.1">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Hablas - Language Learning</title>
+</head>
+<body>
+    <div id="title">
+        <p>Hablas</p>
+        <div id="title-right">
+            <div id="user-section">Login</div>
+            <img src="images/settings.png" id="settings"/> 
+        </div>
+    </div>
+
+    <!-- Initial choice screen -->
+    <div id="initChoice">
+        <div id="initDailypages" class="disabled">Daily pages</div>
+        <div id="initFreeRead" class="disabled">Free read</div>
+        
+        <div id="init-login-section">
+            <h3>Please log in to start</h3>
+            <input type="text" id="init-user-name" placeholder="Email">
+            <input type="password" id="init-user-password" placeholder="Password">
+            <div id="init-login-signup" style="display: flex; width: 100%; gap: 10px; margin-top: 10px;">
+                <div id="init-login-button" class="options" style="flex: 1;">Login</div>
+                <div id="init-signup-button" class="options" style="flex: 1;">Sign up</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Free reading container -->
+    <div id="div2viewer" class="mode-container">
+        <div id="viewer">
+            <div id="empty-viewer-message">
+                <p></p>
+                <button id="browse-books-btn" onclick="loadAvailableBooks()">Tap here to begin!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily pages container -->
+    <div id="pagele-content" class="mode-container">
+        <!-- Pagele Selection Modal -->
+        <div id="pagele-modal" class="modal">
+            <span class="close">&times;</span>
+            <h2>Select a Pagele</h2>
+            <div id="pagele-list-container">
+                <div id="pagele-list"></div>
+            </div>
+        </div>
+        
+        <!-- Chapters Grid Modal -->
+        <div id="chapters-modal" class="modal">
+            <span id="close-chapters-modal" class="close">&times;</span>
+            <h2>Chapters</h2>
+            <div id="chapters-grid"></div>
+        </div>
+        
+        <!-- Sentence Display Modal -->
+        <div id="sentence-modal" class="modal">
+            <div class="sentence-info-container">
+                <button id="translation-btn" class="hold-button">Translate</button>
+                <h2 id="chapter-title">Chapter Title</h2>
+                <span id="close-sentence-modal" class="close">&times;</span>
+            </div>
+            <div id="sentence-container"></div>
+            <div id="prediction-container"></div>
+            <div class="sentence-info-container">
+                <span id="sentence-counter">1/10</span>
+                <span id="points-display-pagele">Points: </span><span id="points-pagele">0</span>
+            </div>
+            <div id="actionButtons">
+                <img id="prev-sentence" src="images/arrow-left.png" alt="prev-sentence"/>
+                <img id="record-pagele" src="images/recordingButton.png" alt="record icon"/>
+                <img id="robot-pagele" src="images/robot_talk_white.png" alt="robot" data-speaking="false"/>
+                <img id="next-sentence" src="images/arrow-right.png" alt="next-sentence"/>
+                
+                <div id="recording-status-pagele" style="display: none;">
+                    <div class="status-spinner"></div>
+                    <div class="status-message">Processing...</div>
+                    <div class="timer">0.0s</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" accept=".epub" style="display: none;"/>
+     
+    <!-- Settings drawer -->
+    <div id="settings-drawer" class="drawer">
+        <span id="close-drawer" class="close">&times;</span>
+        <h2>Settings</h2>
+        <div id="settings-options">
+            <input type="text" id="user-name" placeholder="Email">
+            <input type="password" id="user-password" placeholder="Password">
+            <div id="login-singup" style="display: flex; width: 100%; gap: 10px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+                <div id="login-button" class="options" style="flex: 1;">Login</div>
+                <div id="signup-button" class="options" style="flex: 1;">Sign up</div>
+            </div>
+            <div id="mode-switch" class="options">Switch to <span id="mode-text">Daily Pages</span></div>
+            <div id="available-books" class="options">Available books</div>
+            <div id="available-pagele" class="options">Available daily pages</div>
+            <div id="userLanguages" class="options">Native Language</div>
+            <select id="languageUserOptions" default="en" class="settings-select">
+                <option value="en">English</option>
+                <option value="es">Español</option> 
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="it">Italiano</option>
+                <option value="pt">Português</option>
+                <option value="ru"> CAA:89</option>
+                <option value="zh-cn">-‡ (€S)</option>
+                <option value="ja">å,ž</option>
+                <option value="ko">\m´</option>
+                <option value="ar">'D91(J)</option>
+                <option value="hi">9?(M&@</option>
+                <option value="nl">Nederlands</option>
+                <option value="sv">Svenska</option>
+                <option value="pl">Polski</option>
+                <option value="tr">Türkçe</option>
+                <option value="th">D"</option>
+                <option value="vi">Ti¿ng ViÇt</option>
+            </select>
+            <div id="tutorial" class="options">Tutorial</div>
+            <div id="found-bug" class="options">Found a bug</div>
+            <!-- Subscription Section -->
+            <div id="subscription-section" class="subscription-section" style="display: none;">
+                <h3>Monthly Subscription</h3>
+                <div id="subscription-status-display" class="subscription-status inactive">
+                    No active subscription
+                </div>
+                <button id="manage-subscription-btn" class="subscription-button subscribe">
+                    Subscribe for £5/month
+                </button>
+                <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                    Unlock unlimited access to all features
+                </p>
+            </div>
+
+            <div id="tip-section" class="options">
+                <h3>Support Hablas</h3>
+                <div class="tip-amounts">
+                    <button class="tip-button" data-amount="1">£1</button>
+                    <button class="tip-button" data-amount="3">£3</button>
+                    <button class="tip-button" data-amount="5">£5</button>
+                    <button class="tip-button" data-amount="10">£10</button>
+                </div>
+                <div id="tip-custom">
+                    <input type="number" id="custom-tip" min="1" step="1" placeholder="Custom amount">
+                    <button id="custom-tip-button">Tip</button>
+                </div>
+            </div>
+
+            <!-- Admin Section (hidden by default) -->
+            <div id="admin-section" class="admin-section" style="display: none;">
+                <h3>Admin Tools</h3>
+                <div class="admin-controls">
+                    <div>
+                        <label>Target Username:</label>
+                        <input type="text" id="admin-target-username" placeholder="username@example.com">
+                    </div>
+                    <div>
+                        <label>Access Type:</label>
+                        <select id="admin-access-type">
+                            <option value="lifetime_free">Lifetime Free</option>
+                            <option value="free_month">Free Month</option>
+                            <option value="premium_trial">Premium Trial</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Duration (days, for timed access):</label>
+                        <input type="number" id="admin-duration" value="30" min="1">
+                    </div>
+                    <div>
+                        <label>Notes:</label>
+                        <input type="text" id="admin-notes" placeholder="Optional notes">
+                    </div>
+                    <div class="admin-buttons">
+                        <button id="grant-access-btn" class="admin-button grant">Grant Access</button>
+                        <button id="revoke-access-btn" class="admin-button revoke">Revoke Access</button>
+                        <button id="check-access-btn" class="admin-button check">Check Access</button>
+                    </div>
+                </div>
+                <div id="admin-message" style="margin-top: 10px; padding: 10px; border-radius: 5px; display: none;"></div>
+            </div>
+
+            <div id="file">
+                <img src="images/upload-icon-white.png" alt="upload symbol" />
+                <img src="images/epub-icon-white.png" alt="upload symbol" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Books modal -->
+    <div id="books-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="books-grid"></div>
+        </div>
+    </div>
+
+    <!-- Translation modal -->
+    <div id="myModal" class="modal"> 
+        <div class="modal-content" id="modal-content"> 
+            <span class="close-modal">&times;</span>
+            <div id="modal-main">
+                <div id="translation"></div>
+                <div id="return_sentence">>></div>
+            </div>
+
+            <div id="actionButtons" style="position: relative;">
+                <img id="record" src="images/recordingButton.png" alt="record icon"/>
+                <img id="robot" src="images/robot_talk_white.png" alt="robot" data-speaking="false"/>
+                <div id="points-display">Points: <span id="points">0</span></div>
+                
+                <div id="recording-status" style="
+                    display: none;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: rgba(0, 0, 0, 0.7);
+                    /* Ensure it's using flex to center content, as per JS */
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 1000;">
+                    <div class="status-spinner"></div>
+                    <div class="status-message">Processing...</div>
+                    <div class="timer">0.0s</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User account options modal -->
+    <div id="user-account-options-modal" class="modal user-account-options-modal">
+        <div class="modal-content user-account-options-modal-content">
+            <span class="close options-close">&times;</span>
+            <p>User account options</p>
+            <button id="change-info-button">Change info</button>
+            <button id="delete-account-button">Delete account</button>
+        </div>
+    </div>
+
+    <!-- Tutorial modal -->
+    <div id="tutorialModal" class="modal">
+        <span class="close">&times;</span>
+        <div id="tutorial-content" class="modal-content">
+            <div class="loading-spinner">Loading...</div>
+        </div>
+    </div>
+
+  
+
+    <div id="fetching-data-status" style="
+    display: none; 
+    position: fixed; /* Fixed to cover viewport */
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    background-color: rgba(0, 0, 0, 0.7); 
+    /* Ensure it's using flex to center content, as per JS */
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 2000; /* High z-index to be on top */
+    color: white;
+    ">
+    <div class="status-spinner"></div> <!-- Reuse your existing spinner style if you have one -->
+    <div class="status-message">Fetching data...</div>
+</div>
+
+    <!-- Payment modal -->
+    <div id="payment-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Complete Your Tip</h2>
+            <div id="payment-element"></div>
+            <button id="submit-payment">Pay Now</button>
+            <div id="payment-message"></div>
+        </div>
+    </div>
+
+    <!-- Subscription modal -->
+    <div id="subscription-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Choose Your Plan</h2>
+            
+            <!-- Monthly Plan -->
+            <div class="subscription-plan featured">
+                <h3>Monthly Subscription</h3>
+                <div class="plan-price">£5<span style="font-size: 0.5em;">/month</span></div>
+                <ul class="plan-features">
+                    <li>Unlimited recordings (vs. 10/day free)</li>
+                    <li>Unlimited book access (vs. 1/month free)</li>
+                    <li>All language pairs</li>
+                    <li>Priority support</li>
+                    <li>Cancel anytime</li>
+                </ul>
+                
+                <div style="margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 14px;">
+                    <strong>Free users get:</strong><br>
+                    " 10 recordings per day<br>
+                    " 1 book per month<br>
+                    " Basic features
+                </div>
+                <div id="subscription-payment-element"></div>
+                <button id="subscribe-button" class="subscription-button subscribe">
+                    Start Subscription
+                </button>
+            </div>
+            
+            <div id="subscription-message" style="margin-top: 15px; text-align: center; color: #666;"></div>
+        </div>
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>
