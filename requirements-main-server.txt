@@ -1,8 +1,0 @@
-asyncio
-websockets
-sqlite3
-Pillow
-uuid
-orjson
-stripe
-aiohttp 

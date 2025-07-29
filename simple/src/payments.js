@@ -305,12 +305,8 @@ function setupSubscriptionElements(clientSecret) {
     }
     
     console.log('Setting up subscription elements with client secret:', clientSecret);
-    console.log('Client secret length:', clientSecret.length);
-    console.log('Client secret prefix:', clientSecret.substring(0, 20) + '...');
-    console.log('Using Stripe publishable key:', STRIPE_PUBLISHABLE_KEY.substring(0, 20) + '...');
     
     // Create elements with the clientSecret from SetupIntent
-    console.log('Creating Stripe elements...');
     subscriptionElements = stripe.elements({
         clientSecret: clientSecret,
         appearance: {
@@ -323,10 +319,7 @@ function setupSubscriptionElements(clientSecret) {
         }
     });
 
-    console.log('Creating payment element...');
     const paymentElement = subscriptionElements.create('payment');
-    
-    console.log('Mounting payment element to #subscription-payment-element...');
     paymentElement.mount('#subscription-payment-element');
 
     // Show the subscription modal now that elements are ready
@@ -741,6 +734,12 @@ function updateCompactUsageIndicator() {
     
     // Hide for subscribed users
     if (hasActiveSubscription()) {
+        usageIndicator.style.display = 'none';
+        return;
+    }
+    
+    // Also hide during testing mode
+    if (TESTING_MODE) {
         usageIndicator.style.display = 'none';
         return;
     }

@@ -670,12 +670,15 @@ function triggerCelebration() {
         
         // Randomly choose between confetti or fireworks
         if (Math.random() < 0.5) {
+            console.log('🎊 Creating confetti');
             createConfetti();
         } else {
+            console.log('🎆 Creating fireworks');
             createFireworks();
         }
         
         return true; // Celebration was triggered
     }
+    console.log('No celebration this time (25% chance)');
     return false; // No celebration
 }

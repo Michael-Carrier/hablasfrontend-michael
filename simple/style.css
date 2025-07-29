@@ -2007,6 +2007,25 @@ flex-direction: column;
         overflow-y: auto !important;
         padding: 15px !important;
     }
+
+    /* Mobile-specific celebration adjustments */
+    .celebration-message {
+        font-size: 2.5em; /* Slightly smaller on mobile */
+        top: 25%; /* Higher up on mobile */
+        max-width: 90vw; /* Ensure it fits on screen */
+        text-align: center;
+        white-space: nowrap;
+    }
+    
+    .confetti {
+        width: 8px; /* Slightly smaller confetti on mobile */
+        height: 8px;
+    }
+    
+    .firework-spark {
+        width: 3px; /* Slightly smaller sparks on mobile */
+        height: 3px;
+    }
 }
 
 /* Force all pagele elements to have lower z-index */
@@ -2462,7 +2481,7 @@ flex-direction: column;
 .celebration-message {
     position: fixed;
     top: 30%;
-    left: 50%;
+    left:  50%;
     transform: translate(-50%, -50%);
     font-size: 3em;
     font-weight: bold;
@@ -2482,5 +2501,26 @@ flex-direction: column;
     50% {
         transform: translate(-50%, -50%) scale(1.2);
         opacity: 1;
+    }
+}
+
+/* Mobile-specific celebration adjustments */
+@media (max-width: 768px) {
+    .celebration-message {
+        font-size: 2.5em; /* Slightly smaller on mobile */
+        top: 25%; /* Higher up on mobile */
+        max-width: 90vw; /* Ensure it fits on screen */
+        text-align: center;
+        white-space: nowrap;
+    }
+    
+    .confetti {
+        width: 8px; /* Slightly smaller confetti on mobile */
+        height: 8px;
+    }
+    
+    .firework-spark {
+        width: 3px; /* Slightly smaller sparks on mobile */
+        height: 3px;
     }
 }
