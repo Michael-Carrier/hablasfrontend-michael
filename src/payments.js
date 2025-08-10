@@ -1,17 +1,17 @@
-// Stripe payment and subscription management
 
-// Stripe configuration - LIVE KEYS ONLY
 const STRIPE_PUBLISHABLE_KEY = 'pk_live_51R936ZH6FESgUvUmI0Gu1qfxauHRtqnx9Usx1UkQQgzOVGC2e5MIhKopUsPcSw1n3XfUF8qZyuL7ZGb1wYUOR8DG007A0ipkpw';
 
 let stripe = null;
 let subscriptionElements = null;
 let subscriptionSetupInProgress = false;
+let setupIntentClientSecret = null;
 
 // Load Stripe
 function initializeStripe() {
     if (!TESTING_MODE && window.Stripe) {
         stripe = window.Stripe(STRIPE_PUBLISHABLE_KEY);
         console.log('Stripe initialized with live publishable key');
+        handleRedirectedSetupIntent();
     } else if (!window.Stripe) {
         console.error('Stripe.js not loaded - make sure the script tag is in your HTML');
     } else {
@@ -298,6 +298,7 @@ function initializeSubscriptionPayment() {
 }
 
 function setupSubscriptionElements(clientSecret) {
+    setupIntentClientSecret = clientSecret;
 
     
     if (!stripe) {
@@ -362,9 +363,80 @@ function setupSubscriptionElements(clientSecret) {
     
     paymentElement.mount('#subscription-payment-element');
 
-    // Don't override the button handler - it's already set up in event-listeners.js
-    
+    // The button handler is set up in event-listeners.js to call submitSubscription
+}
 
+async function submitSubscription() {
+    if (!stripe || !subscriptionElements) {
+        console.error('Stripe not ready for submission');
+        alert('Payment system not ready. Please refresh and try again.');
+        return;
+    }
+
+    const subscribeBtn = document.getElementById('subscribe-button');
+    if (subscribeBtn) {
+        subscribeBtn.disabled = true;
+        subscribeBtn.textContent = 'Processing...';
+    }
+
+    // Use a clean return URL without query params or fragments
+    const returnUrl = window.location.href.split('?')[0].split('#')[0];
+
+    const { error } = await stripe.confirmSetup({
+        elements: subscriptionElements,
+        confirmParams: {
+            return_url: returnUrl,
+        },
+        redirect: 'if_required'
+    });
+
+    if (error) {
+        if (error.type === "card_error" || error.type === "validation_error") {
+            alert(error.message);
+        } else {
+            console.error('Stripe confirmSetup error:', error);
+            alert("An unexpected error occurred during payment setup.");
+        }
+        if (subscribeBtn) {
+            subscribeBtn.disabled = false;
+            subscribeBtn.textContent = 'Start Subscription';
+        }
+        return;
+    }
+
+    // This part executes if confirmSetup succeeds without a redirect.
+    // If a redirect happens, the user is sent away and this code doesn't run.
+    if (!setupIntentClientSecret) {
+        console.error('setupIntentClientSecret is not available for non-redirect flow');
+        alert('An error occurred. Please refresh and try again.');
+        if (subscribeBtn) {
+            subscribeBtn.disabled = false;
+            subscribeBtn.textContent = 'Start Subscription';
+        }
+        return;
+    }
+
+    const { setupIntent } = await stripe.retrieveSetupIntent(setupIntentClientSecret);
+    if (setupIntent && setupIntent.status === 'succeeded') {
+        // Hide modal and show processing message
+        const subscriptionModal = document.getElementById('subscription-modal');
+        if (subscriptionModal) {
+            subscriptionModal.style.display = 'none';
+        }
+        showTemporaryNotification('Payment method confirmed! Creating your subscription...', 'info');
+        
+        sendSocketMessage({
+            task: 'create_subscription',
+            payment_method_id: setupIntent.payment_method,
+            token: localStorage.getItem('token')
+        });
+    } else {
+        alert(`Payment setup failed: ${setupIntent ? setupIntent.status : 'Unknown status'}. Please try again.`);
+        if (subscribeBtn) {
+            subscribeBtn.disabled = false;
+            subscribeBtn.textContent = 'Start Subscription';
+        }
+    }
 }
 
 
@@ -880,4 +952,45 @@ function showTemporaryNotification(message, type = 'info') {
     setTimeout(() => {
         notification.style.transform = 'translateX(100%)';
     }, 5000);
+}
+
+// Handle redirect back from Stripe after 3D Secure
+async function handleRedirectedSetupIntent() {
+    if (!stripe) return;
+
+    const clientSecret = new URLSearchParams(window.location.search).get(
+        'setup_intent_client_secret'
+    );
+
+    if (!clientSecret) {
+        return;
+    }
+
+    // Clean the URL to avoid re-processing on refresh
+    window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+
+    const { setupIntent } = await stripe.retrieveSetupIntent(clientSecret);
+
+    switch (setupIntent.status) {
+        case 'succeeded':
+            showTemporaryNotification('Payment method saved! Creating subscription...', 'info');
+            // The modal might be closed, but we can still send the request
+            sendSocketMessage({
+                task: 'create_subscription',
+                payment_method_id: setupIntent.payment_method,
+                token: localStorage.getItem('token')
+            });
+            break;
+        case 'processing':
+            showTemporaryNotification("Processing payment details. We'll update you when it's complete.", 'info');
+            break;
+        case 'requires_payment_method':
+            alert('Payment method setup failed. Please try again.');
+            startSubscription(); // Re-open the modal
+            break;
+        default:
+            alert('Something went wrong. Please try again.');
+            startSubscription(); // Re-open the modal
+            break;
+    }
 }

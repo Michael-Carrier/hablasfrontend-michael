@@ -244,7 +244,7 @@ function setupEventListeners() {
     const cancelButton = document.getElementById('cancel-subscription-button');
     
     if (subscribeButton) {
-        addTouchAwareListener(subscribeButton, startSubscription);
+        addTouchAwareListener(subscribeButton, submitSubscription);
     }
     
     if (cancelButton) {
