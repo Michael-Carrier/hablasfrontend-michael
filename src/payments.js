@@ -1,6 +1,6 @@
 // Stripe payment and subscription management
 
-// Stripe configuration
+// Stripe configuration - LIVE KEYS ONLY
 const STRIPE_PUBLISHABLE_KEY = 'pk_live_51R936ZH6FESgUvUmI0Gu1qfxauHRtqnx9Usx1UkQQgzOVGC2e5MIhKopUsPcSw1n3XfUF8qZyuL7ZGb1wYUOR8DG007A0ipkpw';
 
 let stripe = null;
@@ -8,15 +8,27 @@ let subscriptionElements = null;
 
 // Load Stripe
 function initializeStripe() {
-    if (window.Stripe) {
+    if (!TESTING_MODE && window.Stripe) {
         stripe = window.Stripe(STRIPE_PUBLISHABLE_KEY);
         console.log('Stripe initialized with live publishable key');
-    } else {
+    } else if (!window.Stripe) {
         console.error('Stripe.js not loaded - make sure the script tag is in your HTML');
+    } else {
+        console.log('Testing mode: Stripe not initialized');
+        const testingIndicator = document.getElementById('testing-mode-indicator');
+        if (testingIndicator) {
+            testingIndicator.style.display = 'block';
+        }
     }
 }
 
 function handlePaymentResponse(response) {
+    if (TESTING_MODE) {
+        console.log('Testing mode: Payment response would be handled');
+        alert('Testing mode: Payment functionality disabled');
+        return;
+    }
+    
     console.log('Payment response:', response);
     
     // Handle setup intent for subscriptions
@@ -53,6 +65,12 @@ function handlePaymentResponse(response) {
 }
 
 function initiateTip(amount) {
+    if (TESTING_MODE) {
+        console.log(`Testing mode: Would initiate $${amount} tip`);
+        alert(`Testing mode: Would process $${amount} tip`);
+        return;
+    }
+    
     if (!isLoggedIn) {
         alert('Please log in to make a tip');
         return;
@@ -67,6 +85,12 @@ function initiateTip(amount) {
 }
 
 async function handleSubscriptionResponse(response) {
+    if (TESTING_MODE) {
+        console.log('Testing mode: Subscription response would be handled');
+        alert('Testing mode: Subscription functionality disabled');
+        return;
+    }
+    
     console.log('Received subscription response:', response);
     
     if (response.status === 'success') {
@@ -156,6 +180,15 @@ function updateSubscriptionUI() {
         return;
     }
     
+    if (TESTING_MODE) {
+        subscriptionSection.style.display = 'block';
+        statusDisplay.textContent = 'Testing Mode - Subscription UI';
+        statusDisplay.style.color = '#ff4444';
+        manageBtn.textContent = 'Testing Mode';
+        manageBtn.onclick = () => alert('Testing mode: Subscription functionality disabled');
+        return;
+    }
+    
     subscriptionSection.style.display = 'block';
     
     // Handle different subscription statuses
@@ -202,6 +235,12 @@ function updateSubscriptionUI() {
 }
 
 function startSubscription() {
+    if (TESTING_MODE) {
+        console.log('Testing mode: Would start subscription');
+        alert('Testing mode: Subscription functionality disabled');
+        return;
+    }
+    
     if (!isLoggedIn) {
         alert('Please log in to subscribe');
         return;
@@ -213,41 +252,42 @@ function startSubscription() {
         return;
     }
     
-    // Hide drawer first with proper cleanup
+    // Hide drawer first
     const drawer = document.getElementById('settings-drawer');
-    const drawerBackdrop = document.getElementById('drawer-backdrop');
-    
     if (drawer) {
         drawer.classList.remove('open');
-    }
-    
-    if (drawerBackdrop) {
-        drawerBackdrop.classList.remove('active');
         setTimeout(() => {
-            drawerBackdrop.style.display = 'none';
+            const backdrop = document.getElementById('drawer-backdrop');
+            if (backdrop) {
+                backdrop.style.display = 'none';
+            }
         }, 300);
     }
     
-    // Wait for drawer animation to complete before showing modal
-    setTimeout(() => {
-        // Initialize subscription payment element first
-        initializeSubscriptionPayment();
-        
-        // Then show the modal after a short delay to ensure Stripe elements are ready
-        setTimeout(() => {
-            const subscriptionModal = document.getElementById('subscription-modal');
-            if (subscriptionModal) {
-                // Ensure proper z-index for mobile
-                subscriptionModal.style.zIndex = '99999';
-                subscriptionModal.style.display = 'flex';
-                showModalWithHistory('subscription-modal');
-                console.log('Subscription modal displayed');
-            }
-        }, 100);
-    }, 400); // Wait for drawer to close
+    // Show loading state immediately
+    const subscribeBtn = document.getElementById('subscribe-button');
+    if (subscribeBtn) {
+        subscribeBtn.disabled = true;
+        subscribeBtn.textContent = 'Loading payment form...';
+    }
+    
+    // Show modal hidden so DOM element exists for Stripe mounting
+    const subscriptionModal = document.getElementById('subscription-modal');
+    if (subscriptionModal) {
+        subscriptionModal.style.display = 'flex';
+        subscriptionModal.style.visibility = 'hidden'; // Hide until ready
+    }
+    
+    // Initialize payment elements first, then show modal when ready
+    initializeSubscriptionPayment();
 }
 
 function initializeSubscriptionPayment() {
+    if (TESTING_MODE) {
+        console.log('Testing mode: Would initialize subscription payment');
+        return;
+    }
+    
     // First, request a SetupIntent from the server
     sendSocketMessage({
         task: 'create_setup_intent',
@@ -256,6 +296,11 @@ function initializeSubscriptionPayment() {
 }
 
 function setupSubscriptionElements(clientSecret) {
+    if (TESTING_MODE) {
+        console.log('Testing mode: Would setup subscription elements');
+        return;
+    }
+    
     if (!stripe) {
         console.error('Stripe not loaded');
         alert('Payment system not ready. Please refresh the page and try again.');
@@ -264,104 +309,99 @@ function setupSubscriptionElements(clientSecret) {
     
     console.log('Setting up subscription elements with client secret:', clientSecret);
     
-    // Validate clientSecret format
-    if (!clientSecret || typeof clientSecret !== 'string' || !clientSecret.startsWith('seti_')) {
-        console.error('Invalid client secret format:', clientSecret);
-        alert('Invalid payment setup. Please try again.');
-        return;
-    }
-    
-    try {
-        // Create elements with the clientSecret from SetupIntent
-        subscriptionElements = stripe.elements({
-            clientSecret: clientSecret,
-            appearance: {
-                theme: 'stripe',
-                variables: {
-                    colorPrimary: '#28a745',
-                    colorBackground: '#ffffff',
-                    colorText: '#30313d',
-                    fontFamily: 'system-ui, sans-serif',
-                    borderRadius: '8px'
-                }
+    // Create elements with the clientSecret from SetupIntent
+    subscriptionElements = stripe.elements({
+        clientSecret: clientSecret,
+        appearance: {
+            theme: 'stripe',
+            variables: {
+                colorPrimary: '#28a745',
+                colorBackground: '#ffffff',
+                colorText: '#30313d',
             }
-        });
+        }
+    });
 
-        const paymentElement = subscriptionElements.create('payment', {
-            layout: 'tabs'
-        });
+    const paymentElement = subscriptionElements.create('payment');
+    
+    // Wait for Stripe element to be ready before showing modal
+    paymentElement.on('ready', () => {
+        console.log('Stripe payment element is ready, showing modal');
         
-        // Mount element with error handling for mobile
-        const mountElement = document.getElementById('subscription-payment-element');
-        if (!mountElement) {
-            console.error('subscription-payment-element not found in DOM');
-            return;
+        // Now make the subscription modal visible
+        const subscriptionModal = document.getElementById('subscription-modal');
+        if (subscriptionModal) {
+            subscriptionModal.style.visibility = 'visible'; // Make visible
+            showModalWithHistory('subscription-modal');
         }
         
-        paymentElement.mount('#subscription-payment-element');
-        
-        // Handle ready event
-        paymentElement.on('ready', () => {
-            console.log('Stripe payment element is ready');
-        });
-        
-        // Handle change events
-        paymentElement.on('change', (event) => {
-            if (event.error) {
-                console.log('Stripe element error:', event.error);
-            }
-        });
-
-        // Update the subscribe button handler
+        // Enable the subscribe button
         const subscribeBtn = document.getElementById('subscribe-button');
         if (subscribeBtn) {
-            subscribeBtn.onclick = async (e) => {
-                e.preventDefault();
-                subscribeBtn.disabled = true;
-                subscribeBtn.textContent = 'Processing...';
-                
-                try {
-                    const { error, setupIntent } = await stripe.confirmSetup({
-                        elements: subscriptionElements,
-                        confirmParams: {
-                            return_url: window.location.origin
-                        },
-                        redirect: 'if_required'
-                    });
-
-                    if (error) {
-                        console.error('Setup confirmation error:', error);
-                        const messageDiv = document.getElementById('subscription-message');
-                        if (messageDiv) {
-                            messageDiv.textContent = error.message;
-                        }
-                        subscribeBtn.disabled = false;
-                        subscribeBtn.textContent = 'Start Subscription';
-                    } else if (setupIntent && setupIntent.payment_method) {
-                        console.log('Setup confirmed, sending payment method to backend');
-                        // Send payment method to backend to create subscription
-                        sendSocketMessage({
-                            task: 'create_subscription',
-                            payment_method_id: setupIntent.payment_method,
-                            token: localStorage.getItem('token')
-                        });
-                    }
-                } catch (confirmError) {
-                    console.error('Subscription confirmation error:', confirmError);
-                    subscribeBtn.disabled = false;
-                    subscribeBtn.textContent = 'Start Subscription';
-                    alert('Error processing subscription. Please try again.');
-                }
-            };
+            subscribeBtn.disabled = false;
+            subscribeBtn.textContent = 'Start Subscription';
         }
+    });
+    
+    // Handle loading state
+    paymentElement.on('loaderror', (event) => {
+        console.error('Stripe payment element failed to load:', event.error);
+        alert('Payment system failed to load. Please refresh and try again.');
         
-    } catch (setupError) {
-        console.error('Error setting up Stripe elements:', setupError);
+        const subscribeBtn = document.getElementById('subscribe-button');
+        if (subscribeBtn) {
+            subscribeBtn.disabled = false;
+            subscribeBtn.textContent = 'Start Subscription';
+        }
+    });
+    
+    paymentElement.mount('#subscription-payment-element');
+
+    // Update the subscribe button handler
+    const subscribeBtn = document.getElementById('subscribe-button');
+    if (subscribeBtn) {
+        subscribeBtn.onclick = async (e) => {
+            e.preventDefault();
+            subscribeBtn.disabled = true;
+            subscribeBtn.textContent = 'Processing...';
+            
+            const { error, setupIntent } = await stripe.confirmSetup({
+                elements: subscriptionElements,
+                confirmParams: {
+                    return_url: window.location.origin
+                },
+                redirect: 'if_required'
+            });
+
+            if (error) {
+                console.error('Setup confirmation error:', error);
+                const messageDiv = document.getElementById('subscription-message');
+                if (messageDiv) {
+                    messageDiv.textContent = error.message;
+                }
+                subscribeBtn.disabled = false;
+                subscribeBtn.textContent = 'Start Subscription';
+            } else if (setupIntent && setupIntent.payment_method) {
+                console.log('Setup confirmed, sending payment method to backend');
+                // Send payment method to backend to create subscription
+                sendSocketMessage({
+                    task: 'create_subscription',
+                    payment_method_id: setupIntent.payment_method,
+                    token: localStorage.getItem('token')
+                });
+            }
+        };
     }
 }
 
 
 function cancelSubscription() {
+    if (TESTING_MODE) {
+        console.log('Testing mode: Would cancel subscription');
+        alert('Testing mode: Would cancel subscription');
+        return;
+    }
+    
     if (!isLoggedIn) {
         alert('Please log in to manage subscription');
         return;
@@ -427,6 +467,12 @@ function incrementUsage(type) {
 }
 
 function showUpgradePrompt(message) {
+    if (TESTING_MODE) {
+        console.log('Testing mode: Would show upgrade prompt:', message);
+        alert(`Testing mode: ${message}`);
+        return;
+    }
+    
     const upgradeModal = document.getElementById('upgrade-modal');
     const upgradeMessage = document.getElementById('upgrade-message');
     
@@ -720,6 +766,12 @@ function updateCompactUsageIndicator() {
     
     // Hide for subscribed users
     if (hasActiveSubscription()) {
+        usageIndicator.style.display = 'none';
+        return;
+    }
+    
+    // Also hide during testing mode
+    if (TESTING_MODE) {
         usageIndicator.style.display = 'none';
         return;
     }

@@ -108,6 +108,12 @@ function setupEventListeners() {
                     hideModalAndShowPrevious('chapters-modal');
                 } else if (modal.id === 'sentence-modal') {
                     hideModalAndShowPrevious('sentence-modal');
+                } else if (modal.id === 'subscription-modal') {
+                    // Reset subscription setup when modal is closed
+                    if (typeof resetSubscriptionSetup === 'function') {
+                        resetSubscriptionSetup();
+                    }
+                    hideModalAndShowPrevious('subscription-modal');
                 } else {
                     // For other modals, use the new history system too
                     hideModalAndShowPrevious(modal.id);
@@ -337,6 +343,12 @@ function setupEventListeners() {
             // Special handling for pagele modal when not logged in
             if (e.target.id === 'pagele-modal' && !isLoggedIn) {
                 hidePageleModal(); // This will show login screen
+            } else if (e.target.id === 'subscription-modal') {
+                // Reset subscription setup when modal is closed
+                if (typeof resetSubscriptionSetup === 'function') {
+                    resetSubscriptionSetup();
+                }
+                hideModalAndShowPrevious(e.target.id);
             } else {
                 hideModalAndShowPrevious(e.target.id);
             }
@@ -354,6 +366,12 @@ function setupEventListeners() {
                 // Special handling for pagele modal when not logged in
                 if (topModal.id === 'pagele-modal' && !isLoggedIn) {
                     hidePageleModal(); // This will show login screen
+                } else if (topModal.id === 'subscription-modal') {
+                    // Reset subscription setup when modal is closed
+                    if (typeof resetSubscriptionSetup === 'function') {
+                        resetSubscriptionSetup();
+                    }
+                    hideModalAndShowPrevious(topModal.id);
                 } else {
                     hideModalAndShowPrevious(topModal.id);
                 }
