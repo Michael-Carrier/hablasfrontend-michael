@@ -596,6 +596,7 @@ flex-direction: column;
         position: relative !important;
         transform: none !important;
         -webkit-transform: none !important;
+        min-width:400px;
     }
     
     /* Stripe elements mobile optimizations */
