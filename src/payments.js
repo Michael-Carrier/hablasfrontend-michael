@@ -350,6 +350,9 @@ function setupSubscriptionElements(clientSecret) {
             subscribeBtn.disabled = false;
             subscribeBtn.textContent = 'Start Subscription';
         }
+        
+        // Reset the setup flag since we're ready
+        subscriptionSetupInProgress = false;
     });
     
     // Handle loading state
@@ -362,6 +365,9 @@ function setupSubscriptionElements(clientSecret) {
             subscribeBtn.disabled = false;
             subscribeBtn.textContent = 'Start Subscription';
         }
+        
+        // Reset the setup flag on error
+        subscriptionSetupInProgress = false;
     });
     
     paymentElement.mount('#subscription-payment-element');
