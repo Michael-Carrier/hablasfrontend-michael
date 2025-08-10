@@ -1,69 +1,22 @@
 // Stripe payment and subscription management
 
-// Stripe configuration - use test key for development, live key for production
-const STRIPE_PUBLISHABLE_KEY_TEST = 'pk_test_51R936ZH6FESgUvUm9hNlRk8x6RjvYYdHJf1tJzIf1OuSF9N4jvOGQ9mKU3fVAWdz0EoI8s5jP2PnJkQa3DbMKTj500ZCNEe4qQ'; // Your test key
-const STRIPE_PUBLISHABLE_KEY_LIVE = 'pk_live_51R936ZH6FESgUvUmI0Gu1qfxauHRtqnx9Usx1UkQQgzOVGC2e5MIhKopUsPcSw1n3XfUF8qZyuL7ZGb1wYUOR8DG007A0ipkpw';
-
-// Use test key for localhost/development, live key for production
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'http:';
-const STRIPE_PUBLISHABLE_KEY = isLocalhost ? STRIPE_PUBLISHABLE_KEY_TEST : STRIPE_PUBLISHABLE_KEY_LIVE;
+// Stripe configuration
+const STRIPE_PUBLISHABLE_KEY = 'pk_live_51R936ZH6FESgUvUmI0Gu1qfxauHRtqnx9Usx1UkQQgzOVGC2e5MIhKopUsPcSw1n3XfUF8qZyuL7ZGb1wYUOR8DG007A0ipkpw';
 
 let stripe = null;
 let subscriptionElements = null;
 
-// Load Stripe conditionally based on testing mode
+// Load Stripe
 function initializeStripe() {
-    if (!TESTING_MODE && window.Stripe) {
+    if (window.Stripe) {
         stripe = window.Stripe(STRIPE_PUBLISHABLE_KEY);
-        console.log(`Stripe initialized with ${isLocalhost ? 'test' : 'live'} publishable key`);
-        
-        // Mobile-specific Stripe configuration
-        if (isMobileDevice && typeof isMobileDevice === 'function' && isMobileDevice()) {
-            console.log('Mobile device detected - applying mobile-specific Stripe configuration');
-            
-            // Check if we're in a restricted context (like iOS Safari with strict privacy settings)
-            try {
-                // Test if third-party contexts are available
-                const testFrame = document.createElement('iframe');
-                testFrame.style.display = 'none';
-                testFrame.src = 'about:blank';
-                document.body.appendChild(testFrame);
-                
-                setTimeout(() => {
-                    try {
-                        if (testFrame.contentDocument) {
-                            console.log('Third-party contexts available');
-                        } else {
-                            console.log('Third-party contexts restricted - this may affect Stripe elements on mobile');
-                        }
-                        document.body.removeChild(testFrame);
-                    } catch (e) {
-                        console.log('Third-party contexts restricted - this may affect Stripe elements on mobile');
-                        document.body.removeChild(testFrame);
-                    }
-                }, 100);
-            } catch (e) {
-                console.log('Unable to test third-party context availability');
-            }
-        }
-    } else if (!window.Stripe) {
-        console.error('Stripe.js not loaded - make sure the script tag is in your HTML');
+        console.log('Stripe initialized with live publishable key');
     } else {
-        console.log('Testing mode: Stripe not initialized');
-        const testingIndicator = document.getElementById('testing-mode-indicator');
-        if (testingIndicator) {
-            testingIndicator.style.display = 'block';
-        }
+        console.error('Stripe.js not loaded - make sure the script tag is in your HTML');
     }
 }
 
 function handlePaymentResponse(response) {
-    if (TESTING_MODE) {
-        console.log('Testing mode: Payment response would be handled');
-        alert('Testing mode: Payment functionality disabled');
-        return;
-    }
-    
     console.log('Payment response:', response);
     
     // Handle setup intent for subscriptions
@@ -87,24 +40,6 @@ function handlePaymentResponse(response) {
         return;
     }
     
-    // Handle errors specifically related to mobile/third-party issues
-    if (response.error && typeof response.error === 'string') {
-        if (response.error.includes('third-party') || response.error.includes('partitioned')) {
-            console.log('Third-party context error detected, providing mobile-specific guidance');
-            const mobileErrorMsg = `
-                Payment system initialization failed. This can happen on mobile devices with strict privacy settings.
-                
-                Please try:
-                • Refreshing the page
-                • Disabling content/ad blockers temporarily
-                • Using a different browser (Chrome/Firefox)
-                • Allowing third-party cookies for this site
-            `;
-            alert(mobileErrorMsg);
-            return;
-        }
-    }
-    
     // Handle regular payment responses (tips, etc.)
     if (response.success) {
         alert('Payment successful! Thank you for your support.');
@@ -118,12 +53,6 @@ function handlePaymentResponse(response) {
 }
 
 function initiateTip(amount) {
-    if (TESTING_MODE) {
-        console.log(`Testing mode: Would initiate $${amount} tip`);
-        alert(`Testing mode: Would process $${amount} tip`);
-        return;
-    }
-    
     if (!isLoggedIn) {
         alert('Please log in to make a tip');
         return;
@@ -138,12 +67,6 @@ function initiateTip(amount) {
 }
 
 async function handleSubscriptionResponse(response) {
-    if (TESTING_MODE) {
-        console.log('Testing mode: Subscription response would be handled');
-        alert('Testing mode: Subscription functionality disabled');
-        return;
-    }
-    
     console.log('Received subscription response:', response);
     
     if (response.status === 'success') {
@@ -233,15 +156,6 @@ function updateSubscriptionUI() {
         return;
     }
     
-    if (TESTING_MODE) {
-        subscriptionSection.style.display = 'block';
-        statusDisplay.textContent = 'Testing Mode - Subscription UI';
-        statusDisplay.style.color = '#ff4444';
-        manageBtn.textContent = 'Testing Mode';
-        manageBtn.onclick = () => alert('Testing mode: Subscription functionality disabled');
-        return;
-    }
-    
     subscriptionSection.style.display = 'block';
     
     // Handle different subscription statuses
@@ -288,12 +202,6 @@ function updateSubscriptionUI() {
 }
 
 function startSubscription() {
-    if (TESTING_MODE) {
-        console.log('Testing mode: Would start subscription');
-        alert('Testing mode: Subscription functionality disabled');
-        return;
-    }
-    
     if (!isLoggedIn) {
         alert('Please log in to subscribe');
         return;
@@ -340,50 +248,6 @@ function startSubscription() {
 }
 
 function initializeSubscriptionPayment() {
-    if (TESTING_MODE) {
-        console.log('Testing mode: Would initialize subscription payment');
-        return;
-    }
-    
-    // Check for mobile-specific issues before proceeding
-    if (isMobileDevice && typeof isMobileDevice === 'function' && isMobileDevice()) {
-        console.log('Initializing subscription payment for mobile device');
-        
-        // Check if we're in a problematic mobile context
-        const userAgent = navigator.userAgent.toLowerCase();
-        const isIOSSafari = /safari/.test(userAgent) && /iphone|ipad/.test(userAgent) && !/crios|fxios/.test(userAgent);
-        
-        if (isIOSSafari) {
-            console.log('iOS Safari detected - applying additional safeguards');
-            
-            // Provide user feedback for potential issues
-            const subscriptionModal = document.getElementById('subscription-modal');
-            if (subscriptionModal) {
-                const existingMessage = document.getElementById('mobile-payment-notice');
-                if (!existingMessage) {
-                    const notice = document.createElement('div');
-                    notice.id = 'mobile-payment-notice';
-                    notice.innerHTML = `
-                        <div style="background: #f0f8ff; border: 1px solid #b3d9ff; border-radius: 6px; padding: 12px; margin-bottom: 15px; font-size: 14px;">
-                            <strong>📱 Mobile Payment Notice:</strong><br>
-                            If the payment form doesn't load properly, please try:
-                            <ul style="margin: 8px 0 0 20px; padding: 0;">
-                                <li>Refreshing the page</li>
-                                <li>Disabling content blockers temporarily</li>
-                                <li>Using a different browser</li>
-                            </ul>
-                        </div>
-                    `;
-                    
-                    const modalContent = subscriptionModal.querySelector('.modal-content');
-                    if (modalContent) {
-                        modalContent.insertBefore(notice, modalContent.firstChild);
-                    }
-                }
-            }
-        }
-    }
-    
     // First, request a SetupIntent from the server
     sendSocketMessage({
         task: 'create_setup_intent',
@@ -392,11 +256,6 @@ function initializeSubscriptionPayment() {
 }
 
 function setupSubscriptionElements(clientSecret) {
-    if (TESTING_MODE) {
-        console.log('Testing mode: Would setup subscription elements');
-        return;
-    }
-    
     if (!stripe) {
         console.error('Stripe not loaded');
         alert('Payment system not ready. Please refresh the page and try again.');
@@ -404,6 +263,13 @@ function setupSubscriptionElements(clientSecret) {
     }
     
     console.log('Setting up subscription elements with client secret:', clientSecret);
+    
+    // Validate clientSecret format
+    if (!clientSecret || typeof clientSecret !== 'string' || !clientSecret.startsWith('seti_')) {
+        console.error('Invalid client secret format:', clientSecret);
+        alert('Invalid payment setup. Please try again.');
+        return;
+    }
     
     try {
         // Create elements with the clientSecret from SetupIntent
@@ -432,13 +298,7 @@ function setupSubscriptionElements(clientSecret) {
             return;
         }
         
-        paymentElement.mount('#subscription-payment-element').catch(error => {
-            console.error('Error mounting Stripe payment element:', error);
-            // Handle specific mobile browser issues
-            if (error.message && error.message.includes('third-party')) {
-                alert('Please disable ad blockers or privacy settings that block third-party content and try again.');
-            }
-        });
+        paymentElement.mount('#subscription-payment-element');
         
         // Handle ready event
         paymentElement.on('ready', () => {
@@ -497,18 +357,11 @@ function setupSubscriptionElements(clientSecret) {
         
     } catch (setupError) {
         console.error('Error setting up Stripe elements:', setupError);
-        alert('Error initializing payment system. Please refresh the page and try again.');
     }
 }
 
 
 function cancelSubscription() {
-    if (TESTING_MODE) {
-        console.log('Testing mode: Would cancel subscription');
-        alert('Testing mode: Would cancel subscription');
-        return;
-    }
-    
     if (!isLoggedIn) {
         alert('Please log in to manage subscription');
         return;
@@ -574,12 +427,6 @@ function incrementUsage(type) {
 }
 
 function showUpgradePrompt(message) {
-    if (TESTING_MODE) {
-        console.log('Testing mode: Would show upgrade prompt:', message);
-        alert(`Testing mode: ${message}`);
-        return;
-    }
-    
     const upgradeModal = document.getElementById('upgrade-modal');
     const upgradeMessage = document.getElementById('upgrade-message');
     
@@ -873,12 +720,6 @@ function updateCompactUsageIndicator() {
     
     // Hide for subscribed users
     if (hasActiveSubscription()) {
-        usageIndicator.style.display = 'none';
-        return;
-    }
-    
-    // Also hide during testing mode
-    if (TESTING_MODE) {
         usageIndicator.style.display = 'none';
         return;
     }

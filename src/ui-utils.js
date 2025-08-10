@@ -492,9 +492,9 @@ function showModalRespectingDrawer(modalId) {
                 modal.style.zIndex = '99999'; // Above everything else
             }
             
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
         } else {
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
             
             // If drawer is open, ensure modal appears below it
             if (drawer && drawer.classList.contains('open')) {
