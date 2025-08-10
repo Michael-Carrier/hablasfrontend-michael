@@ -5,6 +5,7 @@ const STRIPE_PUBLISHABLE_KEY = 'pk_live_51R936ZH6FESgUvUmI0Gu1qfxauHRtqnx9Usx1Uk
 
 let stripe = null;
 let subscriptionElements = null;
+let subscriptionSetupInProgress = false;
 
 // Load Stripe
 function initializeStripe() {
@@ -288,6 +289,14 @@ function initializeSubscriptionPayment() {
         return;
     }
     
+    // Prevent duplicate initialization
+    if (subscriptionSetupInProgress) {
+        console.log('Subscription setup already in progress, skipping');
+        return;
+    }
+    
+    subscriptionSetupInProgress = true;
+    
     // First, request a SetupIntent from the server
     sendSocketMessage({
         task: 'create_setup_intent',
@@ -365,12 +374,15 @@ function setupSubscriptionElements(clientSecret) {
             subscribeBtn.disabled = true;
             subscribeBtn.textContent = 'Processing...';
             
+            // Mobile browsers need explicit redirect for 3D Secure
+            const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+            
             const { error, setupIntent } = await stripe.confirmSetup({
                 elements: subscriptionElements,
                 confirmParams: {
-                    return_url: window.location.origin
+                    return_url: window.location.href // Use current URL instead of origin
                 },
-                redirect: 'if_required'
+                redirect: isMobile ? 'always' : 'if_required' // Force redirect on mobile
             });
 
             if (error) {
