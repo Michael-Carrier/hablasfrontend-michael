@@ -372,44 +372,74 @@ function setupSubscriptionElements(clientSecret) {
     
     paymentElement.mount('#subscription-payment-element');
 
-    // Update the subscribe button handler
-    const subscribeBtn = document.getElementById('subscribe-button');
-    if (subscribeBtn) {
-        subscribeBtn.onclick = async (e) => {
-            e.preventDefault();
-            subscribeBtn.disabled = true;
-            subscribeBtn.textContent = 'Processing...';
+    // Update the subscribe button handler - do this after modal is visible
+    setTimeout(() => {
+        const subscribeBtn = document.getElementById('subscribe-button');
+        if (subscribeBtn) {
+            console.log('Setting up subscribe button click handler');
             
-            // Mobile browsers need explicit redirect for 3D Secure
-            const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+            // Remove any existing handlers
+            subscribeBtn.onclick = null;
             
-            const { error, setupIntent } = await stripe.confirmSetup({
-                elements: subscriptionElements,
-                confirmParams: {
-                    return_url: window.location.href // Use current URL instead of origin
-                },
-                redirect: isMobile ? 'always' : 'if_required' // Force redirect on mobile
-            });
+            subscribeBtn.onclick = async (e) => {
+                console.log('Subscribe button clicked!');
+                e.preventDefault();
+                e.stopPropagation();
+                
+                subscribeBtn.disabled = true;
+                subscribeBtn.textContent = 'Processing...';
+                
+                // Mobile browsers need explicit redirect for 3D Secure
+                const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+                console.log('Mobile detection:', isMobile);
+                
+                try {
+                    console.log('About to call stripe.confirmSetup...');
+                    console.log('Elements object:', subscriptionElements);
+                    console.log('Return URL:', window.location.href);
+                    console.log('Redirect mode:', isMobile ? 'always' : 'if_required');
+                    
+                    const { error, setupIntent } = await stripe.confirmSetup({
+                        elements: subscriptionElements,
+                        confirmParams: {
+                            return_url: window.location.href
+                        },
+                        redirect: isMobile ? 'always' : 'if_required'
+                    });
 
-            if (error) {
-                console.error('Setup confirmation error:', error);
-                const messageDiv = document.getElementById('subscription-message');
-                if (messageDiv) {
-                    messageDiv.textContent = error.message;
+                    console.log('confirmSetup result - error:', error);
+                    console.log('confirmSetup result - setupIntent:', setupIntent);
+
+                    if (error) {
+                        console.error('Setup confirmation error:', error);
+                        alert('Payment setup failed: ' + error.message);
+                        subscribeBtn.disabled = false;
+                        subscribeBtn.textContent = 'Start Subscription';
+                    } else if (setupIntent && setupIntent.payment_method) {
+                        console.log('Setup confirmed, sending payment method to backend');
+                        sendSocketMessage({
+                            task: 'create_subscription',
+                            payment_method_id: setupIntent.payment_method,
+                            token: localStorage.getItem('token')
+                        });
+                    } else {
+                        console.log('Unexpected confirmSetup result - no error but no setupIntent.payment_method');
+                        console.log('setupIntent status:', setupIntent?.status);
+                        alert('Unexpected payment result. Please try again.');
+                        subscribeBtn.disabled = false;
+                        subscribeBtn.textContent = 'Start Subscription';
+                    }
+                } catch (confirmError) {
+                    console.error('Subscription confirmation error:', confirmError);
+                    alert('Error processing subscription: ' + confirmError.message);
+                    subscribeBtn.disabled = false;
+                    subscribeBtn.textContent = 'Start Subscription';
                 }
-                subscribeBtn.disabled = false;
-                subscribeBtn.textContent = 'Start Subscription';
-            } else if (setupIntent && setupIntent.payment_method) {
-                console.log('Setup confirmed, sending payment method to backend');
-                // Send payment method to backend to create subscription
-                sendSocketMessage({
-                    task: 'create_subscription',
-                    payment_method_id: setupIntent.payment_method,
-                    token: localStorage.getItem('token')
-                });
-            }
-        };
-    }
+            };
+        } else {
+            console.error('Subscribe button not found when trying to set up handler');
+        }
+    }, 100); // Small delay to ensure modal is fully rendered
 }
 
 
