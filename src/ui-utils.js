@@ -479,15 +479,32 @@ function showModalRespectingDrawer(modalId) {
     const drawer = document.getElementById('settings-drawer');
     
     if (modal) {
-        modal.style.display = 'block';
-        addToModalHistory(modalId);
-        
-        // If drawer is open, ensure modal appears below it
-        if (drawer && drawer.classList.contains('open')) {
-            modal.style.zIndex = '99998'; // Below drawer but above other content
+        // Mobile-specific improvements
+        if (isMobileDevice()) {
+            // Force reflow to prevent iOS rendering issues
+            modal.style.display = 'none';
+            modal.offsetHeight; // Force reflow
+            
+            // Set proper stacking context for mobile
+            if (drawer && drawer.classList.contains('open')) {
+                modal.style.zIndex = '99998'; // Below drawer but above other content
+            } else {
+                modal.style.zIndex = '99999'; // Above everything else
+            }
+            
+            modal.style.display = 'block';
         } else {
-            modal.style.zIndex = ''; // Reset to default
+            modal.style.display = 'block';
+            
+            // If drawer is open, ensure modal appears below it
+            if (drawer && drawer.classList.contains('open')) {
+                modal.style.zIndex = '99998'; // Below drawer but above other content
+            } else {
+                modal.style.zIndex = ''; // Reset to default
+            }
         }
+        
+        addToModalHistory(modalId);
     }
 }
 
@@ -496,15 +513,43 @@ function showModalWithHistoryRespectingDrawer(modalId) {
     const drawer = document.getElementById('settings-drawer');
     
     if (modal) {
-        modal.style.display = 'flex';
-        addToModalHistory(modalId);
-        
-        // If drawer is open, ensure modal appears below it
-        if (drawer && drawer.classList.contains('open')) {
-            modal.style.zIndex = '99998'; // Below drawer but above other content
+        // Mobile-specific improvements
+        if (isMobileDevice()) {
+            // Force reflow to prevent iOS rendering issues
+            modal.style.display = 'none';
+            modal.offsetHeight; // Force reflow
+            
+            // Set proper stacking context for mobile
+            if (drawer && drawer.classList.contains('open')) {
+                modal.style.zIndex = '99998'; // Below drawer but above other content
+            } else {
+                modal.style.zIndex = '99999'; // Above everything else
+            }
+            
+            modal.style.display = 'flex';
+            
+            // Additional mobile-specific handling for subscription modal
+            if (modalId === 'subscription-modal') {
+                // Ensure Stripe elements have proper context
+                setTimeout(() => {
+                    const stripeElement = document.getElementById('subscription-payment-element');
+                    if (stripeElement) {
+                        stripeElement.style.isolation = 'isolate';
+                    }
+                }, 100);
+            }
         } else {
-            modal.style.zIndex = ''; // Reset to default
+            modal.style.display = 'flex';
+            
+            // If drawer is open, ensure modal appears below it
+            if (drawer && drawer.classList.contains('open')) {
+                modal.style.zIndex = '99998'; // Below drawer but above other content
+            } else {
+                modal.style.zIndex = ''; // Reset to default
+            }
         }
+        
+        addToModalHistory(modalId);
         
         console.log('Showing modal with history (respecting drawer):', modalId);
     }

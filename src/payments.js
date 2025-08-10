@@ -16,6 +16,36 @@ function initializeStripe() {
     if (!TESTING_MODE && window.Stripe) {
         stripe = window.Stripe(STRIPE_PUBLISHABLE_KEY);
         console.log(`Stripe initialized with ${isLocalhost ? 'test' : 'live'} publishable key`);
+        
+        // Mobile-specific Stripe configuration
+        if (isMobileDevice && typeof isMobileDevice === 'function' && isMobileDevice()) {
+            console.log('Mobile device detected - applying mobile-specific Stripe configuration');
+            
+            // Check if we're in a restricted context (like iOS Safari with strict privacy settings)
+            try {
+                // Test if third-party contexts are available
+                const testFrame = document.createElement('iframe');
+                testFrame.style.display = 'none';
+                testFrame.src = 'about:blank';
+                document.body.appendChild(testFrame);
+                
+                setTimeout(() => {
+                    try {
+                        if (testFrame.contentDocument) {
+                            console.log('Third-party contexts available');
+                        } else {
+                            console.log('Third-party contexts restricted - this may affect Stripe elements on mobile');
+                        }
+                        document.body.removeChild(testFrame);
+                    } catch (e) {
+                        console.log('Third-party contexts restricted - this may affect Stripe elements on mobile');
+                        document.body.removeChild(testFrame);
+                    }
+                }, 100);
+            } catch (e) {
+                console.log('Unable to test third-party context availability');
+            }
+        }
     } else if (!window.Stripe) {
         console.error('Stripe.js not loaded - make sure the script tag is in your HTML');
     } else {
@@ -55,6 +85,24 @@ function handlePaymentResponse(response) {
         console.log('Setting up subscription payment elements with client secret');
         setupSubscriptionElements(response.client_secret);
         return;
+    }
+    
+    // Handle errors specifically related to mobile/third-party issues
+    if (response.error && typeof response.error === 'string') {
+        if (response.error.includes('third-party') || response.error.includes('partitioned')) {
+            console.log('Third-party context error detected, providing mobile-specific guidance');
+            const mobileErrorMsg = `
+                Payment system initialization failed. This can happen on mobile devices with strict privacy settings.
+                
+                Please try:
+                • Refreshing the page
+                • Disabling content/ad blockers temporarily
+                • Using a different browser (Chrome/Firefox)
+                • Allowing third-party cookies for this site
+            `;
+            alert(mobileErrorMsg);
+            return;
+        }
     }
     
     // Handle regular payment responses (tips, etc.)
@@ -257,32 +305,83 @@ function startSubscription() {
         return;
     }
     
-    // Show subscription modal and hide drawer
-    const subscriptionModal = document.getElementById('subscription-modal');
-    if (subscriptionModal) {
-        subscriptionModal.style.display = 'flex';
-        showModalWithHistory('subscription-modal');
-    }
-    
+    // Hide drawer first with proper cleanup
     const drawer = document.getElementById('settings-drawer');
+    const drawerBackdrop = document.getElementById('drawer-backdrop');
+    
     if (drawer) {
         drawer.classList.remove('open');
+    }
+    
+    if (drawerBackdrop) {
+        drawerBackdrop.classList.remove('active');
         setTimeout(() => {
-            const backdrop = document.getElementById('drawer-backdrop');
-            if (backdrop) {
-                backdrop.style.display = 'none';
-            }
+            drawerBackdrop.style.display = 'none';
         }, 300);
     }
     
-    // Initialize subscription payment element
-    initializeSubscriptionPayment();
+    // Wait for drawer animation to complete before showing modal
+    setTimeout(() => {
+        // Initialize subscription payment element first
+        initializeSubscriptionPayment();
+        
+        // Then show the modal after a short delay to ensure Stripe elements are ready
+        setTimeout(() => {
+            const subscriptionModal = document.getElementById('subscription-modal');
+            if (subscriptionModal) {
+                // Ensure proper z-index for mobile
+                subscriptionModal.style.zIndex = '99999';
+                subscriptionModal.style.display = 'flex';
+                showModalWithHistory('subscription-modal');
+                console.log('Subscription modal displayed');
+            }
+        }, 100);
+    }, 400); // Wait for drawer to close
 }
 
 function initializeSubscriptionPayment() {
     if (TESTING_MODE) {
         console.log('Testing mode: Would initialize subscription payment');
         return;
+    }
+    
+    // Check for mobile-specific issues before proceeding
+    if (isMobileDevice && typeof isMobileDevice === 'function' && isMobileDevice()) {
+        console.log('Initializing subscription payment for mobile device');
+        
+        // Check if we're in a problematic mobile context
+        const userAgent = navigator.userAgent.toLowerCase();
+        const isIOSSafari = /safari/.test(userAgent) && /iphone|ipad/.test(userAgent) && !/crios|fxios/.test(userAgent);
+        
+        if (isIOSSafari) {
+            console.log('iOS Safari detected - applying additional safeguards');
+            
+            // Provide user feedback for potential issues
+            const subscriptionModal = document.getElementById('subscription-modal');
+            if (subscriptionModal) {
+                const existingMessage = document.getElementById('mobile-payment-notice');
+                if (!existingMessage) {
+                    const notice = document.createElement('div');
+                    notice.id = 'mobile-payment-notice';
+                    notice.innerHTML = `
+                        <div style="background: #f0f8ff; border: 1px solid #b3d9ff; border-radius: 6px; padding: 12px; margin-bottom: 15px; font-size: 14px;">
+                            <strong>📱 Mobile Payment Notice:</strong><br>
+                            If the payment form doesn't load properly, please try:
+                            <ul style="margin: 8px 0 0 20px; padding: 0;">
+                                <li>Refreshing the page</li>
+                                <li>Disabling content blockers temporarily</li>
+                                <li>Using a different browser</li>
+                            </ul>
+                        </div>
+                    `;
+                    
+                    const modalContent = subscriptionModal.querySelector('.modal-content');
+                    if (modalContent) {
+                        modalContent.insertBefore(notice, modalContent.firstChild);
+                    }
+                }
+            }
+        }
     }
     
     // First, request a SetupIntent from the server
@@ -306,59 +405,99 @@ function setupSubscriptionElements(clientSecret) {
     
     console.log('Setting up subscription elements with client secret:', clientSecret);
     
-    // Create elements with the clientSecret from SetupIntent
-    subscriptionElements = stripe.elements({
-        clientSecret: clientSecret,
-        appearance: {
-            theme: 'stripe',
-            variables: {
-                colorPrimary: '#28a745',
-                colorBackground: '#ffffff',
-                colorText: '#30313d',
-            }
-        }
-    });
-
-    const paymentElement = subscriptionElements.create('payment');
-    paymentElement.mount('#subscription-payment-element');
-
-    // Show the subscription modal now that elements are ready
-    showModalWithHistory('subscription-modal');
-
-    // Update the subscribe button handler
-    const subscribeBtn = document.getElementById('subscribe-button');
-    if (subscribeBtn) {
-        subscribeBtn.onclick = async (e) => {
-            e.preventDefault();
-            subscribeBtn.disabled = true;
-            subscribeBtn.textContent = 'Processing...';
-            
-            const { error, setupIntent } = await stripe.confirmSetup({
-                elements: subscriptionElements,
-                confirmParams: {
-                    return_url: window.location.origin
-                },
-                redirect: 'if_required'
-            });
-
-            if (error) {
-                console.error('Setup confirmation error:', error);
-                const messageDiv = document.getElementById('subscription-message');
-                if (messageDiv) {
-                    messageDiv.textContent = error.message;
+    try {
+        // Create elements with the clientSecret from SetupIntent
+        subscriptionElements = stripe.elements({
+            clientSecret: clientSecret,
+            appearance: {
+                theme: 'stripe',
+                variables: {
+                    colorPrimary: '#28a745',
+                    colorBackground: '#ffffff',
+                    colorText: '#30313d',
+                    fontFamily: 'system-ui, sans-serif',
+                    borderRadius: '8px'
                 }
-                subscribeBtn.disabled = false;
-                subscribeBtn.textContent = 'Start Subscription';
-            } else if (setupIntent && setupIntent.payment_method) {
-                console.log('Setup confirmed, sending payment method to backend');
-                // Send payment method to backend to create subscription
-                sendSocketMessage({
-                    task: 'create_subscription',
-                    payment_method_id: setupIntent.payment_method,
-                    token: localStorage.getItem('token')
-                });
             }
-        };
+        });
+
+        const paymentElement = subscriptionElements.create('payment', {
+            layout: 'tabs'
+        });
+        
+        // Mount element with error handling for mobile
+        const mountElement = document.getElementById('subscription-payment-element');
+        if (!mountElement) {
+            console.error('subscription-payment-element not found in DOM');
+            return;
+        }
+        
+        paymentElement.mount('#subscription-payment-element').catch(error => {
+            console.error('Error mounting Stripe payment element:', error);
+            // Handle specific mobile browser issues
+            if (error.message && error.message.includes('third-party')) {
+                alert('Please disable ad blockers or privacy settings that block third-party content and try again.');
+            }
+        });
+        
+        // Handle ready event
+        paymentElement.on('ready', () => {
+            console.log('Stripe payment element is ready');
+        });
+        
+        // Handle change events
+        paymentElement.on('change', (event) => {
+            if (event.error) {
+                console.log('Stripe element error:', event.error);
+            }
+        });
+
+        // Update the subscribe button handler
+        const subscribeBtn = document.getElementById('subscribe-button');
+        if (subscribeBtn) {
+            subscribeBtn.onclick = async (e) => {
+                e.preventDefault();
+                subscribeBtn.disabled = true;
+                subscribeBtn.textContent = 'Processing...';
+                
+                try {
+                    const { error, setupIntent } = await stripe.confirmSetup({
+                        elements: subscriptionElements,
+                        confirmParams: {
+                            return_url: window.location.origin
+                        },
+                        redirect: 'if_required'
+                    });
+
+                    if (error) {
+                        console.error('Setup confirmation error:', error);
+                        const messageDiv = document.getElementById('subscription-message');
+                        if (messageDiv) {
+                            messageDiv.textContent = error.message;
+                        }
+                        subscribeBtn.disabled = false;
+                        subscribeBtn.textContent = 'Start Subscription';
+                    } else if (setupIntent && setupIntent.payment_method) {
+                        console.log('Setup confirmed, sending payment method to backend');
+                        // Send payment method to backend to create subscription
+                        sendSocketMessage({
+                            task: 'create_subscription',
+                            payment_method_id: setupIntent.payment_method,
+                            token: localStorage.getItem('token')
+                        });
+                    }
+                } catch (confirmError) {
+                    console.error('Subscription confirmation error:', confirmError);
+                    subscribeBtn.disabled = false;
+                    subscribeBtn.textContent = 'Start Subscription';
+                    alert('Error processing subscription. Please try again.');
+                }
+            };
+        }
+        
+    } catch (setupError) {
+        console.error('Error setting up Stripe elements:', setupError);
+        alert('Error initializing payment system. Please refresh the page and try again.');
     }
 }
 

@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
+<link href="https://fonts.googleapis.com/css2%3Ffamily=Lato:wght@400%3B700&amp;family=Roboto:wght@400%3B700&amp;family=Quicksand:wght@400%3B700&amp;family=Montserrat:wght@400%3B700&amp;display=swap.css" rel="stylesheet"> <!-- Include Lato, Roboto, and Montserrat fonts -->
+<link rel="stylesheet" href="style.css">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <!-- your other head elements -->
+</head>
+<body>
+    
+    <div id="title">
+        <p>Hablas</p>
+        <div id="title-right">
+       
+            <div id="user-section">Login</div>
+        <img src="images/settings.png" id="settings"/> 
+        </div>
+    </div>
+
+    <div id="initChoice">
+        <div id="initDailypages" class="disabled">Daily pages</div>
+        <div id="initFreeRead" class="disabled">Free read</div>
+        
+        <div id="init-login-section">
+            <h3>Please log in to start</h3>
+            <input type="text" id="init-user-name" placeholder="Email">
+            <input type="password" id="init-user-password" placeholder="Password">
+            <div id="init-login-signup" style="display: flex; width: 100%; gap: 10px; margin-top: 10px;">
+                <div id="init-login-button" class="options" style="flex: 1;">Login</div>
+                <div id="init-signup-button" class="options" style="flex: 1;">Sign up</div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="div2viewer">
+            <div id="viewer">
+                <div id="empty-viewer-message">
+                    <p></p>
+                    <button id="browse-books-btn" onclick="loadAvailableBooks()">Tap here to begin!</button>
+                </div>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" accept=".epub"/>
+     
+    <div id="settings-drawer" class="drawer">
+            <span id="close-drawer" class="close">&times;</span>
+            <h2>Settings</h2>
+            <div id="settings-options">
+                <input type="text" id="user-name" placeholder="Email">
+                <input type="password" id="user-password" placeholder="Password">
+                <div id="login-singup" style="display: flex; width: 100%; gap: 10px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+                    <div id="login-button" class="options" style="flex: 1;">Login</div>
+                    <div id="signup-button" class="options" style="flex: 1;">Sign up</div>
+                 </div>
+                <div id="available-books" class="options">Available books</div>
+                <div id="toPages" class="options">Daily Pages</div>
+                <div id="userLanguages"  class="options">Native Language</div>
+                <select id="languageUserOptions" default="en" class="settings-select">
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option> 
+                    <option value="fr">FranÃ§ais</option>
+                    <option value="de">Deutch</option>
+                    <option value="it">Italian</option>
+                </select>
+                <div id="voice-gender" class="options">Voice Gender</div>
+                <select id="voice-gender-select" class="settings-select">
+                    <option value="female">Female</option>
+                    <option value="male">Male</option>
+                </select>
+                <div id="tutorial">Tutorial</div>
+                <div id="points-display">Points: <span id="points">0</span></div>
+                <div id="tip-section" class="options">
+                    <h3>Support Hablas</h3>
+                    <div class="tip-amounts">
+                        <button class="tip-button" data-amount="1">$1</button>
+                        <button class="tip-button" data-amount="3">$3</button>
+                        <button class="tip-button" data-amount="5">$5</button>
+                        <button class="tip-button" data-amount="10">$10</button>
+                    </div>
+                    <div id="tip-custom">
+                        <input type="number" id="custom-tip" min="1" step="1" placeholder="Custom amount">
+                        <button id="custom-tip-button">Tip</button>
+                    </div>
+                </div>
+                <div id="file">
+                    <img src="images/upload-icon-white.png" alt="upload symbol" />
+                    <img src="images/epub-icon-white.png" alt="upload symbol" />
+                </div>
+            </div>
+    </div>
+</div>
+
+
+<div id="books-modal" >
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="books-grid"></div>
+    </div>
+</div>
+
+<div id="myModal"> 
+    <div class="modal-content" id="modal-content"> 
+        <span class="close-modal">&times;</span>
+        <div id="modal-main">
+            <div id="translation"></div>
+            <div id="return_sentence">>></div>
+        </div>
+
+        <div id="actionButtons" style="position: relative;">
+            <img id="record" src="images/recordingButton.png" alt="record icon"/>
+            <img id="robot" src="images/robot_talk_white.png" alt="robot" data-speaking="false"/>
+            <div id="points-display">Points: <span id="points">0</span></div>
+            
+            <div id="recording-status" style="
+                display: none;
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.7);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;">
+                <div class="status-spinner"></div>
+                <div class="status-message">Processing...</div>
+                <div class="timer">0.0s</div>
+    </div>
+</div>
+
+        <!-- Add status indicator -->
+        <div id="recording-status" style="display: none;">
+            <div class="status-spinner"></div>
+            <div class="status-message">Processing...</div>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="user-account-options-modal" class="modal user-account-options-modal">
+    <div class="modal-content user-account-options-modal-content">
+        <span class="close options-close">&times;</span>
+        <p>User account options</p>
+        <button id="change-info-button">Change info</button>
+        <button id="delete-account-button">Delete account</button>
+    </div>
+</div>
+
+
+<div id="tutorialModal" class="modal">
+    <span class="close">&times;</span>
+    <div id="tutorial-content" class="modal-content">
+        <!-- Content will be loaded here -->
+        <div class="loading-spinner">Loading...</div>
+    </div>
+</div>
+<div id="parsing-status" style="
+    display: none; 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    height: 10%;
+    width: 10%;
+    background-color: rgba(0, 0, 0, 0.7); 
+    /* इंश्योर it's using flex to center content, as per JS */
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 1001; /* Adjust if needed to be on top */
+    color: white;
+    ">
+    <div class="status-spinner"></div> <!-- Reuse your existing spinner style -->
+    <div class="status-message">Parsing data...</div>
+</div>
+<!-- Add Stripe Elements -->
+<div id="payment-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Complete Your Tip</h2>
+        <div id="payment-element"></div>
+        <button id="submit-payment">Pay Now</button>
+        <div id="payment-message"></div>
+    </div>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+    
+    const EVENT_TYPE = ('ontouchstart' in window) ? 'touchend' : 'click';
+    console.log(`Using ${EVENT_TYPE} events for this device`);
+
+    const fileInput = document.getElementById('fileInput');
+    fileInput.style.display= "none";
+    let currentBook = null;
+    let rendition = null;
+    let selectedText = null;
+    let lines = []; 
+    let lineNum = 0;
+    let language = "";
+    let isRecording = false; 
+    let translationText = "";
+    let mediaRecorder; 
+    let audioChunks = []; //buffer
+    let userPoints = 0;
+    let cfi = null;
+    const lang_conversion = {
+        "francais": "fr",
+        "english": "en",
+        "espaÃ±ol": "es",
+        "espagnol": "es",
+        "spanish": "es",
+        "deutsch": "de",
+        "italiano": "it"
+    }
+    const modalDiv = document.getElementById('myModal');
+    const closeBtn = document.getElementsByClassName('close')[0];
+    // Select all elements with the 'close' class
+    const closeButtons = document.getElementsByClassName('close');
+
+    // Add click event listener to each close button
+    Array.from(closeButtons).forEach(closeBtn => {
+        closeBtn.addEventListener(EVENT_TYPE, () => {
+            // Find the closest parent modal/drawer
+            
+            const container = closeBtn.closest('.modal, .drawer, #books-modal');
+            console.log("closing container:", container);
+            if (container) {
+                container.style.display = 'none';
+            }
+        });
+    });
+    const selectDiv = document.getElementById('selectedText');
+    const prevArrowBtn = document.getElementsByClassName('arrowPrev')[0];
+    const nextArrowBtn = document.getElementsByClassName('arrowNext')[0];
+    const returnSentenceDiv = document.getElementById('return_sentence');
+    const fileDiv = document.getElementById("file");
+    const pointsDisplay = document.getElementById("points-display");
+
+    const nextPageBtn = document.getElementById('next');
+    const prevPageBtn = document.getElementById('prev');
+    const selectBtn = document.getElementById('select');
+
+    const settingsBtn = document.getElementById ("settings");
+    const userSection = document.getElementById ("user-section");
+    const drawer = document.getElementById('settings-drawer');
+    const closeDrawerBtn = document.getElementById('close-drawer');
+    const availableBooksBtn = document.getElementById('available-books');
+
+    const recordBtn = document.getElementById('record'); 
+    const textToSpeechBtn = document.getElementById('robot');
+    const translation = document.getElementById('translation');
+    
+    const languageDisplay2 = document.getElementById('userLanguages');
+    const languageUserOptionsSelect = document.getElementById('languageUserOptions');
+    
+    const abbreviations = [
+        'Mr.', 'Mrs.', 'Ms.', 'Dr.', 'Prof.',
+        'Sr.', 'Jr.', 'etc.', 'e.g.', 'i.e.', '."'
+    ];
+
+    const booksModal = document.getElementById('books-modal');
+
+    // First, get reference to your slider
+    const speedSlider = document.querySelector('.vertical-slider'); // Adjust selector as needed
+    let speechRate = 1; // Default speech rate
+    let popupflag=false;
+    // Add event listener to the slider
+    const usernameInput2 = document.getElementById('init-user-name');   
+    const passwordInput2 = document.getElementById('init-user-password');
+    const tutorialBtn = document.getElementById('tutorial');
+    const userAccountBtn = document.getElementById('user-account');
+    const usernameInput = document.getElementById('user-name');
+    const passwordInput = document.getElementById('user-password');
+    const loginButton = document.getElementById ('login-button');
+    const loginButton2 = document.getElementById ('init-login-button');
+    const signupButton = document.getElementById ('signup-button');
+    const signupButton2 = document.getElementById ('init-signup-button');
+    const forgotPasswordButton = document.getElementById ('forgot-password-button');
+    const userAccountOptionsBtn = document.getElementById ('user-account-options');
+    const changeInfoButton = document.getElementById ('change-info-button');
+    const deleteAccountButton = document.getElementById ('delete-account-button');
+    const initDailypages = document.getElementById('initDailypages');
+    const initFreeRead = document.getElementById("initFreeRead");
+    const initChoice = document.getElementById('initChoice');
+    let username = '';
+    let password = '';
+
+    const voiceGenderDisplay = document.getElementById('voice-gender');
+    const voiceGenderSelect = document.getElementById('voice-gender-select');
+    let voiceGenderOptionsOpen = false;
+    let availableVoices = [];
+    let selectedVoiceGender = 'female'; // Default to female
+    let selectedBook = null;
+    let selectedPage = null;
+    let sourceLang = "";
+    let languageSel ="en";
+
+    // Add these variables at the start of your script
+    let processingStartTime = 0;
+    let timerInterval = null;
+
+    // Add these variables at the top of your script with other variables
+    let currentSentenceIndex = 0;
+    let allSentences = [];
+    let totalDailySentences = 10;
+    let currentDailySentences = []; //sentences of today
+    let lastSentencePosition = 0;   // Track where we left off the daily sentences
+    let sentenceToTranslate = "";
+    let dailyTranslationSentence = "translating daily sentence...";
+
+    let positionFirstDailySentence = 0;
+
+    // Add this variable with other globals at the top
+    let currentAudio = null;
+
+console.log ("starting script");
+
+
+// Replace the existing WebSocket implementation with a simpler function-based approach
+function createWebSocketConnection() {
+    const socket = new WebSocket('wss://carriertech.uk:8675');
+    //const socket = new WebSocket('ws://localhost:8675');
+    socket.addEventListener('open', (event) => {
+        console.log('WebSocket connection established');
+    });
+
+    socket.addEventListener('error', (error) => {
+        console.error('WebSocket error:', error);
+    });
+
+    socket.addEventListener('message', async (event) => {
+            const messageProcessingStartTime = performance.now(); // Start timing
+            const parsingStatusElement = document.getElementById('parsing-status');
+            if (parsingStatusElement) {
+                parsingStatusElement.style.display = 'flex';
+            }
+
+            console.log("Type of event.data: ", typeof event.data, "Is Blob?", event.data instanceof Blob, "Is ArrayBuffer?", event.data instanceof ArrayBuffer);
+            
+            let jsonString;
+            let parsedResponseObject = null; 
+            let conversionStartTime, conversionEndTime, parsingStartTime, parsingEndTime, afterConversionTime, afterParsingTime;
+
+            if (event.data instanceof ArrayBuffer) {
+                console.log("Received ArrayBuffer, decoding...");
+                try {
+                    conversionStartTime = performance.now();
+                    const decoder = new TextDecoder("utf-8");
+                    jsonString = decoder.decode(event.data);
+                    conversionEndTime = performance.now();
+                    console.log(`ArrayBuffer decoding took ${(conversionEndTime - conversionStartTime).toFixed(2)} ms`);
+                } catch (e) {
+                    console.error("Error decoding ArrayBuffer:", e);
+                    const statusIndicator = document.getElementById('recording-status');
+                    if (currentRequestTask === 'stt' && statusIndicator && statusIndicator.style.display !== 'none') {
+                       clearInterval(timerInterval); statusIndicator.style.display = 'none'; if (processingStartTime) processingStartTime = 0;
+                    }
+                    if (parsingStatusElement) parsingStatusElement.style.display = 'none';
+                    return;
+                }
+            } else if (event.data instanceof Blob) {
+                console.log("Received Blob, reading as text...");
+                try {
+                    conversionStartTime = performance.now();
+                    jsonString = await event.data.text(); // Await the promise
+                    conversionEndTime = performance.now();
+                    console.log(`Blob.text() took ${(conversionEndTime - conversionStartTime).toFixed(2)} ms`);
+                } catch (e) {
+                    console.error("Error reading Blob as text:", e);
+                    const statusIndicator = document.getElementById('recording-status');
+                    if (currentRequestTask === 'stt' && statusIndicator && statusIndicator.style.display !== 'none') {
+                       clearInterval(timerInterval); statusIndicator.style.display = 'none'; if (processingStartTime) processingStartTime = 0;
+                    }
+                    if (parsingStatusElement) parsingStatusElement.style.display = 'none';
+                    return; 
+                }
+            } else if (typeof event.data === 'string') {
+                console.log("Received string directly.");
+                jsonString = event.data;
+            } else {
+                console.error("Received WebSocket message of unknown type:", event.data);
+                const statusIndicator = document.getElementById('recording-status');
+                if (currentRequestTask === 'stt' && statusIndicator && statusIndicator.style.display !== 'none') {
+                    clearInterval(timerInterval); statusIndicator.style.display = 'none'; if (processingStartTime) processingStartTime = 0;
+                }
+                if (parsingStatusElement) parsingStatusElement.style.display = 'none';
+                return; 
+            }
+
+            afterConversionTime = performance.now();
+            console.log(`Time from start to after data conversion (string ready): ${(afterConversionTime - messageProcessingStartTime).toFixed(2)} ms`);
+
+            // Now, parse the jsonString
+            if (typeof jsonString === 'string') {
+                try {
+                    parsingStartTime = performance.now();
+                    parsedResponseObject = JSON.parse(jsonString);
+                    parsingEndTime = performance.now();
+                    console.log(`JSON.parse() took ${(parsingEndTime - parsingStartTime).toFixed(2)} ms`);
+                } catch (e) {
+                    console.error("Error parsing JSON string:", e);
+                    console.error("Original string that failed parsing:", jsonString);
+                    const statusIndicator = document.getElementById('recording-status');
+                    if (currentRequestTask === 'stt' && statusIndicator && statusIndicator.style.display !== 'none') {
+                       clearInterval(timerInterval); statusIndicator.style.display = 'none'; if (processingStartTime) processingStartTime = 0;
+                    }
+                    if (parsingStatusElement) parsingStatusElement.style.display = 'none';
+                    return; 
+                }
+            } else {
+                console.error("Could not convert event.data to a string for parsing.");
+                 const statusIndicator = document.getElementById('recording-status');
+                if (currentRequestTask === 'stt' && statusIndicator && statusIndicator.style.display !== 'none') {
+                    clearInterval(timerInterval); statusIndicator.style.display = 'none'; if (processingStartTime) processingStartTime = 0;
+                }
+                if (parsingStatusElement) parsingStatusElement.style.display = 'none';
+                return;
+            }
+            
+            afterParsingTime = performance.now();
+            console.log(`Time from start to after JSON parsing: ${(afterParsingTime - messageProcessingStartTime).toFixed(2)} ms`);
+
+            const response = parsedResponseObject; 
+            if (parsingStatusElement) { 
+                parsingStatusElement.style.display = 'none';
+            }
+            
+            const messageOverallEndTime = performance.now();
+            console.log(`Overall message parsing and conversion (to response var assignment) took ${(messageOverallEndTime - messageProcessingStartTime).toFixed(2)} ms`);
+
+            console.log("Received WebSocket message (parsed successfully):", response);
+            
+            // General status indicator hiding (as per original index.html logic)
+            // This might need to be more specific if statusIndicator is only for STT
+            const statusIndicator = document.getElementById('recording-status');
+            if (statusIndicator && statusIndicator.style.display !== 'none') { // Check if it's visible before trying to hide
+                clearInterval(timerInterval);
+                if (processingStartTime) { // Ensure processingStartTime was set
+                     const finalTime = ((Date.now() - processingStartTime) / 1000).toFixed(1);
+                     const timerElement = statusIndicator.querySelector('.timer');
+                     if (timerElement) {
+                         timerElement.textContent = `${finalTime}s`;
+                     }
+                     processingStartTime = 0; // Reset
+                }
+                statusIndicator.style.display = 'none';
+            }
+            
+            // Important: Check if response is not null before using it
+            if (response === null) {
+                console.error("Response is null after parsing attempt, cannot proceed with message handling.");
+                return;
+            }
+
+            if (response.hasOwnProperty('books')) {
+                handleBooksResponse(response);
+            } else if (response.hasOwnProperty('pred_sentence')) {
+                handlePredSentence(response);
+           }else if (response.hasOwnProperty('translation') || 
+                        (response.status === 'success' && response.hasOwnProperty('translated_text'))) {
+                handleTranslationResponse(response);
+            } else if (response.hasOwnProperty('token')) {
+                handleTokenResponse(response);
+            } else if (response.status === 'success' && response.hasOwnProperty('epub')) {
+                // Handle book data response
+                handleBookDataResponse(response);
+            } else if (response.status === 'success' && response.hasOwnProperty('audio')) {
+                // Handle TTS response
+                handleTTSResponse(response);
+            } else if (response.message === "Invalid credentials") {
+                alert("Invalid credentials, have you signed up?");
+            } else if (response.status === 'success' && response.client_secret) {
+            // Initialize payment element
+                elements = stripe.elements({
+                    clientSecret: response.client_secret,
+                    appearance: {
+                        theme: 'stripe',
+                        variables: {
+                            colorPrimary: '#0570de',
+                            colorBackground: '#ffffff',
+                            colorText: '#30313d',
+                        }
+                    }
+                });
+
+                const paymentElement = elements.create('payment');
+                paymentElement.mount('#payment-element');
+
+                // Handle payment submission
+                document.getElementById('submit-payment').addEventListener(EVENT_TYPE, async (e) => {
+                    e.preventDefault();
+                    
+                    const { error } = await stripe.confirmPayment({
+                        elements,
+                        confirmParams: {
+                            return_url: window.location.origin,
+                        }
+                    });
+
+                    if (error) {
+                        const messageDiv = document.getElementById('payment-message');
+                        messageDiv.textContent = error.message;
+                    } else {
+                        // Payment succeeded
+                        document.getElementById('payment-modal').style.display = 'none';
+                        alert('Thank you for your tip!');
+                    }
+                });
+        
+            } else if(response.hasOwnProperty('filename')) {
+                    const epubData = response.epub;
+                    const base64Data = epubData.split(',')[1];
+                    if (!base64Data) {
+                        throw new Error('Invalid EPUB data format');
+                    }
+                    
+                    const byteString = atob(base64Data);
+                    const mimeString = epubData.split(',')[0].split(':')[1].split(';')[0];
+                    const ab = new ArrayBuffer(byteString.length);
+                    const ia = new Uint8Array(ab);
+                    
+                    for (let i = 0; i < byteString.length; i++) {
+                        ia[i] = byteString.charCodeAt(i);
+                    }
+                    
+                    const blob = new Blob([ab], {type: mimeString});
+                    renderEpub(blob);
+                    booksModal.style.display = 'none';
+                    
+                    languageSel = setLanguage(langauge);
+                    selectedBook = book.filename;
+                    console.log("selected ", selectedBook);
+            }else {
+                console.log("Unhandled response from server:", response);
+            }
+       
+    });
+
+    socket.addEventListener('close', (event) => {
+        console.log('WebSocket connection closed', event.code, event.reason);
+    });
+
+    return socket;
+    }
+
+// Initialize the socket
+let socket = createWebSocketConnection();
+
+// Function to send a message through the socket, creating a new connection if needed
+function sendSocketMessage(message) {
+    if (socket.readyState !== WebSocket.OPEN) {
+        console.log('Socket not open, creating new connection');
+        socket = createWebSocketConnection();
+        
+        // Wait for the socket to open before sending the message
+        socket.addEventListener('open', () => {
+            socket.send(JSON.stringify(message));
+        }, { once: true });
+    } else {
+        socket.send(JSON.stringify(message));
+    }
+}
+
+// Update functions to use the sendSocketMessage function
+function loadAvailableBooks() {
+    sendSocketMessage({ task: 'get_books' });
+    booksModal.style.display = 'block';
+}
+
+
+
+// Update login button click handler
+loginButton.addEventListener(EVENT_TYPE, () => {
+    loginButton.style.backgroundColor = '#FFB6C1';
+    username = usernameInput.value.toLowerCase();
+    password = passwordInput.value;
+
+    if (!isValidEmail(username)) {
+        alert("Please enter a valid email address");
+        return; 
+    }
+
+    if (!password || password.trim() === "") {
+        alert("Password cannot be empty");
+        return; 
+    }
+
+    sendSocketMessage({
+        task: "login",
+        username: username,
+        password: password
+    });
+});
+
+loginButton2.addEventListener(EVENT_TYPE, () => {
+    loginButton2.style.backgroundColor = '#FFB6C1';
+    
+    username = usernameInput2.value.toLowerCase();
+    password = passwordInput2.value;
+
+    if (!isValidEmail(username)) {
+        alert("Please enter a valid email address");
+        return; 
+    }
+
+    if (!password || password.trim() === "") {
+        alert("Password cannot be empty");
+        return; 
+    }
+
+    sendSocketMessage({
+        task: "login",
+        username: username,
+        password: password
+});
+});
+
+// Update signup button click handler
+signupButton.addEventListener(EVENT_TYPE, () => {
+    signupButton.style.backgroundColor = '#FFB6C1';
+    username = usernameInput.value.toLowerCase();
+    password = passwordInput.value;
+
+    if (!isValidEmail(username)) {
+        alert("Please enter a valid email address");
+        return;
+    }
+
+    if (!password || password.trim() === "") {
+        alert("Password cannot be empty");
+        return;
+    }
+
+    sendSocketMessage({
+        task: "signup",
+        username: username,
+        password: password
+    });
+});
+
+signupButton2.addEventListener(EVENT_TYPE, () => {
+    signupButton2.style.backgroundColor = '#FFB6C1';
+    username = usernameInput2.value.toLowerCase();
+    password = passwordInput2.value;
+
+    if (!isValidEmail(username)) {
+        alert("Please enter a valid email address");
+        return;
+    }
+
+    if (!password || password.trim() === "") {
+        alert("Password cannot be empty");
+        return;
+    }
+
+    sendSocketMessage({
+        task: "signup",
+        username: username,
+        password: password
+    });
+});
+function verifyToken(token) {
+    sendSocketMessage({
+        task: "verify_token",
+        token: token
+    });
+}
+
+function handleLogout() {
+    // Clear stored token
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    userSection.innerHTML = "Login";
+ 
+    // Update UI
+    updateAuthUI(false);
+    
+    // Reset any user-specific state
+    username = '';
+    password = '';
+    
+    // Close the settings drawer
+    drawer.classList.remove('open');
+    
+    // Make sure we're showing the initial choice with login form
+    document.getElementById('div2viewer').style.display = 'none';
+    document.getElementById('initChoice').style.display = 'flex';
+    
+    // Notify server about logout
+    sendSocketMessage({
+        task: "logout",
+        username: username
+    });
+}
+
+// Handler functions for different types of responses
+function handleBooksResponse(response) {
+        // Group books by language
+    const booksByLanguage = response.books.reduce((acc, book) => {
+            if (!acc[book.language]) {
+                acc[book.language] = [];
+            }
+            acc[book.language].push(book);
+            return acc;
+        }, {});
+        
+   
+    const booksGrid = document.getElementById('books-grid');
+    booksGrid.innerHTML = '';
+    
+        Object.entries(booksByLanguage).forEach(([language, languageBooks]) => {
+            const languageSection = document.createElement('div');
+            languageSection.className = 'language-section';
+            
+            const languageHeader = document.createElement('h2');
+            languageHeader.textContent = language.charAt(0).toUpperCase() + language.slice(1);
+            languageSection.appendChild(languageHeader);
+            
+            const booksContainer = document.createElement('div');
+            booksContainer.className = 'books-container';
+            
+            languageBooks.forEach(book => {
+                const bookElement = document.createElement('div');
+                bookElement.className = 'book';
+
+                const img = document.createElement('img');
+            // Check if cover is base64 data or path
+            if (book.cover && book.cover.startsWith('data:')) {
+                img.src = book.cover;
+            } else {
+                // Fallback to default cover if the base64 data is invalid
+                img.src = 'images/default-cover.png';
+                console.error('Invalid cover data for book:', book.filename);
+            }
+                img.alt = book.filename;
+            
+                const title = document.createElement('div');
+                title.className = 'book-title';
+                title.textContent = book.filename.replace('.epub', '');
+                
+                bookElement.appendChild(img);
+                bookElement.appendChild(title);
+                
+            // Add click event to load the book (now using the async function)
+            bookElement.addEventListener(EVENT_TYPE, async () => {
+                    // Show loading indicator
+                    title.textContent = "Loading...";
+                    
+                    // Request the specific book data
+                    //const response = await wsConnection.request({
+                    //    task: "get_book_data",
+                    //    filename: book.filename,
+                    //});
+                    sendSocketMessage({
+                        task: "get_book_data",
+                        filename: book.filename,
+                    });
+                  
+                    
+                 
+                    
+                    
+                
+            });
+            
+                booksContainer.appendChild(bookElement);
+            });
+            
+            languageSection.appendChild(booksContainer);
+            booksGrid.appendChild(languageSection);
+        });
+}
+
+function setLanguage(language){
+    if (lang_conversion[language]) {
+        return lang_conversion[language];
+    }else{
+        return language;
+    }
+}
+
+
+function handleTranslationResponse(response) {
+    // Handle translation response
+    const translatedText = response.translated_text;
+    translation.innerHTML = translatedText;
+    document.getElementById('daily-translation-sentence').innerHTML = translatedText;
+    //dailyTranslationSentence = translatedText; 
+    console.log("Updated translation with:", translatedText);
+}
+
+function handleTokenResponse(response) {
+    console.log("Token response:", response);
+    localStorage.setItem('token', response.token);
+    username = response.username;
+    console.log("username: ", username);
+    
+    // Standardize the language code
+    if (response.language) {
+
+        sourceLang = response.language;
+        
+        // Update language selector if it exists
+        if (languageSel) {
+            languageSel = setLanguage(sourceLang);
+        }
+    }
+    
+    // Update UI to show logged-in state - pass the response object
+    updateAuthUI(true, response.username, response);
+    
+    // Close the settings drawer
+        drawer.classList.remove('open');
+}
+
+function updateAuthUI(isLoggedIn, username = '', responseData = null) {
+    const loginSignupContainer = document.getElementById('login-singup');
+    const initLoginSection = document.getElementById('init-login-section');
+    
+    if (isLoggedIn) {
+        // Hide login/signup elements in settings drawer
+        loginSignupContainer.style.display = 'none';
+        usernameInput.style.display = 'none';
+        passwordInput.style.display = 'none';
+        
+        // Hide login section on initial screen
+        if (initLoginSection) {
+            initLoginSection.style.display = 'none';
+        }
+        
+        // Enable Free Read and pages buttons
+        initDailypages.classList.remove('disabled');
+        initFreeRead.classList.remove('disabled');
+        
+        sourceLang = responseData.language;
+        languageSel = setLanguage(sourceLang);
+        
+        // Add logged-in user display to settings
+        const userInfoDiv = document.createElement('div');
+        userInfoDiv.id = 'user-info';
+        userInfoDiv.className = 'options';
+        userSection.textContent = username;
+        userInfoDiv.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                <span>Logged in as: ${username}</span>
+                <button id="logout-button" class="small-button">Logout</button>
+            </div>
+        `;
+        
+        // Insert after the login elements
+        const settingsOptions = document.getElementById('settings-options');
+        settingsOptions.insertBefore(userInfoDiv, document.getElementById('available-books'));
+        
+        // Add logout functionality
+        document.getElementById('logout-button').addEventListener(EVENT_TYPE, handleLogout);
+
+        // Load user's current book if available
+        if (responseData && responseData.current_book && responseData.epub) {
+            selectedBook = responseData.current_book;
+            console.log("selectedBook: ", selectedBook);
+            selectedPage = responseData.page || 0;
+            language = responseData.language;
+            languageSel = setLanguage(language);
+            console.log("Loading user's current book:", selectedBook);
+            
+            // Convert base64 to blob
+            const base64Data = responseData.epub.split(',')[1];
+            const mimeString = responseData.epub.split(',')[0].split(':')[1].split(';')[0];
+            const byteString = atob(base64Data);
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            
+            const blob = new Blob([ab], {type: mimeString});
+            cfi = responseData.cfi;
+            // Render the book
+            renderEpub(blob, responseData.cfi).then(() => {
+                if (selectedPage && rendition) {
+                    rendition.display(selectedPage);
+                }
+            }).catch(error => {
+                console.error('Error rendering book:', error);
+            });
+        } else{
+            loadAvailableBooks();
+        }
+    } else {
+        // Show login/signup elements in settings drawer
+        loginSignupContainer.style.display = 'flex';
+        usernameInput.style.display = 'block';
+        passwordInput.style.display = 'block';
+        
+        // Show login section on initial screen
+        if (initLoginSection) {
+            initLoginSection.style.display = 'block';
+        }
+        
+        // Disable Free Read and pages buttons
+        initDailypages.classList.add('disabled');
+        initFreeRead.classList.add('disabled');
+        
+        // Remove user info if it exists
+        const userInfo = document.getElementById('user-info');
+        if (userInfo) {
+            userInfo.remove();
+        }
+    }
+}
+
+
+
+// Update the translation function
+async function updateTranslation(text) {
+    console.log(`Translating text: "${text}" from ${sourceLang}`);
+    
+    translation.textContent = "Translating...";
+    
+    // Get user's native language from settings
+    const targetLang = languageUserOptionsSelect.value;
+    console.log("targetLang: ", targetLang);
+    console.log("sourceLang: ", sourceLang);
+    console.log("username: ", username);
+    const contents = rendition.getContents();
+    cfi = rendition.currentLocation().start.cfi;
+    console.log("cfi: ", cfi);
+    sendSocketMessage({ 
+        task: 'translate', 
+        text: text, 
+        source_lang: sourceLang, 
+        target_lang: targetLang, 
+        current_book: selectedBook, 
+        cfi: cfi,
+        username: username 
+    });
+}
+
+// Update the createBlobAndConnect function
+function createBlobAndConnect() {
+    const statusIndicator = document.getElementById('recording-status');
+    if (statusIndicator) {
+        statusIndicator.style.display = 'flex';
+        // Start the timer
+        processingStartTime = Date.now();
+        updateTimer();
+        timerInterval = setInterval(updateTimer, 100); // Update every 0.1 seconds
+    }
+
+    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+    audioChunks = []; // Clear the chunks array for next recording
+
+    // Convert blob to base64
+    const reader = new FileReader();
+    reader.readAsDataURL(audioBlob);
+    reader.onloadend = function() {
+        const base64data = reader.result;
+        
+        // Log the current language value
+        console.log("Current language value:", languageSel);
+        console.log("Current sourceLang:", sourceLang);
+       
+        sendSocketMessage({ 
+            task: 'stt', 
+            blob: base64data, 
+            language: languageSel, 
+            sentence: lines[lineNum], 
+            username: username, 
+            book: selectedBook, 
+            page: selectedPage 
+        });
+    };
+}
+
+
+
+// Update token verification on page load
+window.addEventListener('DOMContentLoaded', () => {
+    initializeVoices();
+    
+    // Check for stored token and username
+    const storedToken = localStorage.getItem('token');
+    const storedUsername = localStorage.getItem('username');
+    console.log("storedToken: ", storedToken);
+    console.log("storedUsername: ", storedUsername);
+    
+    // Display initial choice with disabled buttons by default
+    document.getElementById('initChoice').style.display = 'flex';
+    document.getElementById('initDailypages').classList.add('disabled');
+    document.getElementById('initFreeRead').classList.add('disabled');
+    
+    if (storedToken) {
+        // Wait for WebSocket connection to be established
+        if (socket.readyState === WebSocket.OPEN) {
+            verifyToken(storedToken);
+        } else {
+            socket.addEventListener('open', () => {
+                verifyToken(storedToken);
+            }, { once: true });
+        }
+    }
+});
+
+// Add this new function to handle the prediction sentence
+async function handlePredSentence(response) {
+    console.log("handlePredSentence: ", response);
+    predSentence = response.pred_sentence;
+    console.log("predSentence: ", predSentence);
+    returnSentenceDiv.innerHTML = predSentence;
+    
+    // Add click handlers to wrong words
+    document.querySelectorAll('.wrong').forEach(wrongWord => {
+        wrongWord.addEventListener(EVENT_TYPE, (event) => {
+            // Remove 'pressed' class from all wrong words
+            document.querySelectorAll('.wrong').forEach(w => w.classList.remove('pressed'));
+            
+            // Add 'pressed' class to clicked word
+            wrongWord.classList.add('pressed');
+            
+            // Get the correct word from the ID
+            const correctWord = wrongWord.id;
+            console.log("Correct word:", correctWord);
+            
+            // Create popup with the correct word only if we have one
+            if (correctWord && !popupflag) {
+                createPopup(correctWord, event);
+            }
+        });
+    });
+    
+    // Show points display when we get a response
+    const pointsDisplay = document.getElementById('points-display');
+    pointsDisplay.style.display = 'block';
+    
+    // Calculate and update points
+    const wrongElements = document.getElementsByClassName("wrong");
+    const totalWords = predSentence.split(' ').length;
+    const correctWords = response.points;
+    
+    // Award points
+    const pointsEarned = correctWords * 10;
+    userPoints += pointsEarned;
+    updatePointsDisplay(userPoints);
+}
+
+// Call loadAvailableBooks when the available books button is clicked
+availableBooksBtn.addEventListener(EVENT_TYPE, () => {
+    loadAvailableBooks();
+    drawer.classList.remove('open');
+        setTimeout(() => {
+            drawer.style.display = 'none';
+        }, 300); 
+    
+});
+
+// Close books modal
+document.querySelectorAll('.modal .close').forEach(closeBtn => {
+    closeBtn.addEventListener(EVENT_TYPE, () => {
+        closeBtn.closest('.modal').style.display = 'none';
+    });
+});
+    // Separate function for epub rendering
+    async function renderEpub(file, cfi=null) {
+        currentBook = ePub(file);
+            const viewer = document.getElementById("viewer");
+        viewer.innerHTML = "";
+        rendition = currentBook.renderTo("viewer", {
+            height: "100%",
+                width: "100%",
+            allowScriptedContent: true,
+            script: true,
+                flow: "scrolled-doc",
+                manager: "continuous"
+            });
+            console.log("cfi: ", cfi);
+            if (cfi) {
+                rendition.display(cfi, { offsetTop: 1000 });
+            } else {
+                rendition.display().then(() => {
+                    addClickHandlersToPage();
+                });
+            }
+            
+            rendition.on("rendered", (section) => {
+                selectedPage = section.href;
+                addClickHandlersToPage();
+                const contents = rendition.getContents();
+            });
+            
+            // Function to add click handlers to the current page
+            function addClickHandlersToPage() {
+                const contents = rendition.getContents();
+                
+                contents.forEach(content => {
+                    // Add CSS for pulsing animation to the document head
+                    const style = content.document.createElement('style');
+                    style.textContent = `
+                        @keyframes pulse {
+                            0% { background-color: transparent; }
+                            50% { background-color: rgba(169, 209, 215, 0.3); }
+                            100% { background-color: transparent; }
+                        }
+                        .pulse-animation {
+                            animation: pulse 2s infinite;
+                        }
+                        .sentence-icon {
+                            font-size: 16px;
+                            margin-right: 4px;
+                            vertical-align: middle;
+                            display: inline-block;
+                        }
+                        .pulse-animation .sentence-icon {
+                            opacity: 1 !important;
+                        }
+                    `;
+                    content.document.head.appendChild(style);
+                    
+                    // Remove any existing pulse animations first
+                    content.document.querySelectorAll('.pulse-animation').forEach(el => {
+                        el.classList.remove('pulse-animation');
+                        const icon = el.querySelector('.sentence-icon');
+                        if (icon) {
+                            icon.remove();
+                        }
+                    });
+                    // Scroll up half a page
+                   
+                                
+
+                    let isFirstSentence = true;
+                    
+                    content.document.querySelectorAll('p, span').forEach((element, elementIndex) => {
+                        if (element.dataset.processed === "true") return;
+                        
+                        // Skip if this is a title (text in all caps)
+                        if (element.textContent.trim() === element.textContent.trim().toUpperCase()) {
+                            element.dataset.processed = "true";
+                            return;
+                        }
+                        
+                        const sentences = element.textContent.split(/(?<=[.!?])\s+/);
+                        if (sentences.length === 0) return;
+                        
+                        element.textContent = '';
+                        element.dataset.processed = "true";
+                        
+                        sentences.forEach((sentence, index) => {
+                            if (sentence.trim().length < 2) return;
+                            
+                            const sentenceSpan = content.document.createElement('span');
+                            sentenceSpan.textContent = sentence + ' ';
+                            sentenceSpan.style.cursor = 'pointer';
+                            sentenceSpan.style.borderRadius = '3px';
+                            sentenceSpan.style.transition = 'background-color 0.2s ease';
+                            
+                            // Only add the finger emoji to the first actual sentence
+                            if (isFirstSentence && 
+                                sentence.trim() !== sentence.trim().toUpperCase() && 
+                                sentence.trim().length > 10) { // Basic check for actual sentence
+                                const selectIcon = content.document.createElement('span');
+                                selectIcon.className = 'sentence-icon';
+                                selectIcon.style.opacity = '1';
+                                sentenceSpan.insertBefore(selectIcon, sentenceSpan.firstChild);
+                                sentenceSpan.classList.add('pulse-animation');
+                                isFirstSentence = false;
+                            }
+                            
+                            // Add hover effects
+                            sentenceSpan.addEventListener('mouseover', () => {
+                                sentenceSpan.style.backgroundColor = 'rgba(169, 209, 215, 0.3)';
+                            });
+                            
+                            sentenceSpan.addEventListener('mouseout', () => {
+                                if (!sentenceSpan.classList.contains('selected-line')) {
+                                    sentenceSpan.style.backgroundColor = 'transparent';
+                                }
+                            });
+                            
+                            // Add click handler
+                            sentenceSpan.addEventListener(EVENT_TYPE, (event) => {
+                                // Remove pulsing animation and icon from any sentence
+                                content.document.querySelectorAll('.pulse-animation').forEach(el => {
+                                    el.classList.remove('pulse-animation');
+                                    const icon = el.querySelector('.sentence-icon');
+                                    if (icon) {
+                                        icon.remove();
+                                    }
+                                });
+                                
+                                // Remove previous selection
+                                content.document.querySelectorAll('.selected-line').forEach(el => {
+                                    el.classList.remove('selected-line');
+                                    el.style.backgroundColor = 'transparent';
+                                });
+                                
+                                // Add selection to clicked sentence
+                                sentenceSpan.classList.add('selected-line');
+                                sentenceSpan.style.backgroundColor = 'rgba(169, 209, 215, 0.5)';
+                                
+                                // Show modal with translation
+                                const modalContent = modalDiv.querySelector('.modal-content');
+                                
+                                // Calculate width for modal content
+                                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                                
+                                // Set modal content width
+                                if (isMobile) {
+                                    modalContent.style.width = `calc(100vw - 20px)`;
+                                    modalContent.style.maxWidth = '100%';
+                                } else {
+                                    const modalWidth = Math.min(window.innerWidth - 40, 800);
+                                    modalContent.style.width = `${modalWidth}px`;
+                                }
+                                
+                                modalDiv.style.display = 'block';
+                                
+                                // Update translation
+                                selectedText = sentence.trim();
+                                lines = [selectedText];
+                                lineNum = 0;
+                                updateTranslation(selectedText);
+                                
+                                event.stopPropagation();
+                            });
+                            
+                            element.appendChild(sentenceSpan);
+                        });
+                    });
+                });
+            }
+            
+        fileDiv.style.display = "none";
+            
+            // Create scroll down button if it doesn't exist
+            if (!document.getElementById('scroll-down-btn')) {
+                const scrollBtn = document.createElement('button');
+                scrollBtn.id = 'scroll-down-btn';
+                scrollBtn.textContent = 'Load More';
+                scrollBtn.style.position = 'absolute';
+                scrollBtn.style.bottom = '10px';
+                scrollBtn.style.left = '50%';
+                scrollBtn.style.transform = 'translateX(-50%)';
+                scrollBtn.style.zIndex = '100';
+                scrollBtn.style.padding = '10px 20px';
+                scrollBtn.style.backgroundColor = '#007bff';
+                scrollBtn.style.color = 'white';
+                scrollBtn.style.border = 'none';
+                scrollBtn.style.borderRadius = '5px';
+                scrollBtn.style.cursor = 'pointer';
+                scrollBtn.style.marginBottom = '10px';
+                
+                let currentSpinePosition = 0;
+                
+                scrollBtn.onclick = async () => {
+                    try {
+                        // Get current spine position
+                        const currentLocation = rendition.currentLocation();
+                        if (!currentLocation) {
+                            console.log("No current location found");
+                            return;
+                        }
+                        
+                        // Get the spine items
+                        const spine = currentBook.spine;
+                        if (!spine) {
+                            console.log("No spine found");
+                            return;
+                        }
+                        
+                        // Move to next spine item
+                        currentSpinePosition++;
+                        if (currentSpinePosition >= spine.length) {
+                            console.log("Reached end of book");
+                            scrollBtn.style.display = 'none';
+                            return;
+                        }
+                        
+                        console.log(`Moving to spine position ${currentSpinePosition}`);
+                        
+                        // Display the next section
+                        await rendition.display(spine.get(currentSpinePosition).href);
+                        
+                        // Add click handlers to the new content
+                        addClickHandlersToPage();
+                        
+                        console.log("Moved to next section");
+                        scrollBtn.style.display = 'none';
+                    } catch (error) {
+                        console.error("Error navigating:", error);
+                    }
+                };
+                
+                // Append to div2viewer
+                const div2viewer = document.getElementById('div2viewer');
+                div2viewer.appendChild(scrollBtn);
+                div2viewer.style.position = 'relative';
+            }
+            if (cfi) {
+                rendition.display(cfi, { offsetTop: 1000 });
+            }
+        }
+
+    recordBtn.addEventListener(EVENT_TYPE, async () => { //standarised procedure 
+        let permissionResult = await navigator.permissions.query({ name: 'microphone' });
+        console.log("permissionResult: ", permissionResult);
+
+        if (permissionResult.state != 'granted') {
+            permissionResult = await navigator.permissions.query({ name: 'microphone' });
+            console.log("permissionResult: ", permissionResult);
+
+            alert('Please grant permission to access the microphone');
+            const streamPermission = await navigator.mediaDevices.getUserMedia({ audio: true });
+    
+        } else if (permissionResult.state == 'granted') {
+            console.log("permission granted");
+
+            if (!isRecording) {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); //built-in function of mozilla to get the media of the user
+                mediaRecorder = new MediaRecorder(stream); //object pre-built
+                
+                mediaRecorder.ondataavailable = event => { //event = the object has changed in some way. every ms that you talk and it gets saved in the array
+                    audioChunks.push(event.data);  //saving the audio into an array
+                };
+
+                mediaRecorder.start();
+                isRecording=true;
+                if (mediaRecorder.state === 'recording') {
+                    console.log('Recording started successfully, this is the state: ', mediaRecorder.state);
+                    recordBtn.src = "images/stopRecButton.png"; //this is the button in DARK RED
+                } else {
+                    alert('Failed to start recording. Please try again.');
+                    isRecording = false;
+                    recordBtn.src = "images/recordingButton.png";
+                }
+
+            } else {   //this means that isRecording==true;
+                mediaRecorder.stop(); 
+                isRecording=false;
+                recordBtn.src = "images/recordingButton.png";
+            } 
+                   
+            mediaRecorder.onstop = () => {
+                createBlobAndConnect(); // Call the function to create the blob and connect
+                //socket.send(JSON.stringify({ event: 'stop' })); // Notify server that recording has stopped
+            };
+            }
+    });
+
+    const closeModalBtn = document.querySelector('.close-modal');
+
+    // Add event listener for the new close button
+    closeModalBtn.addEventListener(EVENT_TYPE, () => {
+        modalDiv.style.display = "none";
+        lineNum = 0;
+        
+        // Hide points display when modal closes
+        const pointsDisplay = document.getElementById('points-display');
+        pointsDisplay.style.display = 'none';
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener(EVENT_TYPE,(event)=> {
+        if (event.target==modalDiv) {
+            modalDiv.style.display = "none";
+        }
+    });
+
+    fileInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            try {
+                await renderEpub(file);
+            } catch (error) {
+                console.error('Error handling file:', error);
+            }
+        }
+    });
+
+    fileDiv.addEventListener(EVENT_TYPE,()=> {
+        fileInput.click();
+    })
+    userSection.addEventListener(EVENT_TYPE, (event) => {
+        if (userSection.textContent == "Login") {
+            console.log("user section clicked");
+            console.log("Drawer classList before:", drawer.classList);
+            drawer.style.display = 'block';  // First set display to block
+            setTimeout(() => {
+                drawer.classList.add('open'); // Then add the open class
+            }, 10);
+            event.stopPropagation();
+        }
+    });
+
+    settingsBtn.addEventListener(EVENT_TYPE, (event) => {
+        console.log("settings button clicked");
+        console.log("Drawer classList before:", drawer.classList);
+        drawer.style.display = 'block';  // First set display to block
+        setTimeout(() => {
+            drawer.classList.add('open'); // Then add the open class
+        }, 10);
+        event.stopPropagation();
+    });
+
+    closeDrawerBtn.addEventListener(EVENT_TYPE, () => {
+        console.log("close button clicked");
+        drawer.classList.remove('open');
+        setTimeout(() => {
+            drawer.style.display = 'none';
+        }, 300); // Wait for transition to complete
+    });
+
+    window.addEventListener(EVENT_TYPE, (event) => {
+        // Check if the click was on the settings button or its children (like the image)
+        if (!drawer.contains(event.target) && !settingsBtn.contains(event.target)) {
+            drawer.classList.remove('open');
+            setTimeout(() => {
+                drawer.style.display = 'none';
+            }, 300); // Wait for transition to complete
+        }
+    });
+
+    // Make sure the drawer starts hidden
+    drawer.style.display = 'none';
+
+    textToSpeechBtn.addEventListener(EVENT_TYPE, () => {
+        const isCurrentlySpeaking = textToSpeechBtn.getAttribute('data-speaking') === 'true';
+        
+        if (isCurrentlySpeaking) {
+            // Stop any currently playing audio
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+            }
+            
+            textToSpeechBtn.setAttribute('data-speaking', 'false');
+            textToSpeechBtn.style.filter = 'brightness(1)';
+        } else {
+            textToSpeechBtn.setAttribute('data-speaking', 'true');
+            textToSpeechBtn.style.filter = 'brightness(0.7)';
+            textToSpeech(lines[lineNum]);
+        }
+    });
+    
+    
+    function randomLanguage(){
+        const languages = ['en', 'es', 'fr', 'de', 'it'];
+        return languages[Math.floor(Math.random() * languages.length)];
+    }
+
+    function textToSpeech(textToSpeak) {
+        console.log('Starting text-to-speech for:', textToSpeak);
+        
+        // Map language codes to supported language codes
+        const langMap = {
+            'en': 'en',
+            'es': 'es',
+            'fr': 'fr',
+            'de': 'de',
+            'it': 'it'
+        };
+        
+        // Get the proper language code from our map
+        const currentLang = languageSel.substring(0,2);
+        const ttsLang = langMap[currentLang] || 'en'; // Default to en if not mapped
+        console.log('Using language:', ttsLang);
+        
+        // Set data-speaking attribute to true and update UI
+        textToSpeechBtn.setAttribute('data-speaking', 'true');
+        textToSpeechBtn.style.filter = 'brightness(0.7)';
+        
+        // Use our WebSocket server for TTS
+        sendSocketMessage({
+            task: 'tts',
+            text: textToSpeak,
+            language: ttsLang
+        });
+        
+        // The socket.addEventListener('message') handler will process the response
+        // We need to add code there to handle TTS responses
+    }
+    
+    function createPopup(content, event) {
+        // Remove any existing popups first
+        document.querySelectorAll('.popup').forEach(popup => popup.remove());
+        
+        const popup = document.createElement('div');
+        const closePopupButton = document.createElement('span');
+        const contentElement = document.createElement('p');
+        
+        // Style the close button
+        closePopupButton.innerHTML = '&times;';
+        closePopupButton.style.position = 'absolute';
+        closePopupButton.style.top = '5px';
+        closePopupButton.style.right = '10px';
+        closePopupButton.style.cursor = 'pointer';
+        closePopupButton.style.fontSize = '18px';
+        closePopupButton.style.fontWeight = 'bold';
+        closePopupButton.classList.add('popup-close');
+        
+        contentElement.textContent = content;
+        
+        popup.appendChild(contentElement);
+        popup.appendChild(closePopupButton);
+        
+        closePopupButton.addEventListener(EVENT_TYPE, (e) => {
+            popup.remove();
+            popupflag = false;
+            e.stopPropagation();
+        });
+        popup.addEventListener(EVENT_TYPE, (e) => {
+            popup.remove();
+            popupflag = false;
+            e.stopPropagation();
+        });
+        
+        // Get click/touch position
+        const x = event.clientX || (event.touches && event.touches[0].clientX) || 0;
+        const y = event.clientY || (event.touches && event.touches[0].clientY) || 0;
+        
+        popup.style.position = 'absolute'; 
+        popup.style.left = `${x}px`;
+        popup.style.top = `${y}px`; 
+        popup.classList.add('popup');
+        
+        document.body.appendChild(popup);
+        popup.style.zIndex = 1000;
+        
+        // Use the correct word for TTS
+        if (content) {
+            console.log("Speaking correct word:", content);
+            textToSpeech(content);
+        } else {
+            console.error("No content to speak");
+        }
+        
+        popupflag = true;
+    }
+    
+    // Add a global click event listener to document
+    document.addEventListener(EVENT_TYPE, (event) => {
+        const popups = document.querySelectorAll('.popup');
+        if (popups.length > 0) {
+            // Check if the click was inside a popup or on a wrong element
+            const clickedInsidePopup = Array.from(popups).some(popup => popup.contains(event.target));
+            const clickedOnWrongElement = event.target.classList.contains('wrong');
+            const clickedOnPopupClose = event.target.classList.contains('popup-close');
+            
+            // If clicked outside popup and not on a wrong element, remove all popups
+            if (!clickedInsidePopup && !clickedOnWrongElement && !clickedOnPopupClose) {
+                popups.forEach(popup => popup.remove());
+                popupflag = false;
+            }
+        }
+    });
+
+    function openUserAccount() {
+        document.getElementById('user-modal').style.display = 'block';
+       }
+
+    function initializeVoices() {
+        // Get the available voices
+        availableVoices = window.speechSynthesis.getVoices();
+        
+        // If voices aren't loaded yet, wait for them
+        if (availableVoices.length === 0) {
+            window.speechSynthesis.addEventListener('voiceschanged', () => {
+                availableVoices = window.speechSynthesis.getVoices();
+                console.log("Available voices:", availableVoices);
+            }, { once: true }); // Add the 'once' option to only trigger this once
+        } else {
+            console.log("Available voices:", availableVoices);
+        }
+    }
+
+    // Add event listener for voice gender selection
+    voiceGenderDisplay.addEventListener(EVENT_TYPE, () => {
+        if (voiceGenderOptionsOpen) {
+            voiceGenderOptionsOpen = false;
+            voiceGenderSelect.style.transform = 'translateX(1000%)';
+        } else {
+            voiceGenderSelect.style.transform = 'translateX(0)';
+            voiceGenderOptionsOpen = true;
+        }
+    });
+
+    // Update selected voice gender when changed
+    voiceGenderSelect.addEventListener('change', () => {
+        selectedVoiceGender = voiceGenderSelect.value;
+        console.log("Selected voice gender:", selectedVoiceGender);
+    });
+
+    // Add event listener for text selection in the viewer
+    const viewerElement = document.getElementById('viewer');
+    if (viewerElement) {
+        viewerElement.addEventListener('mouseup', handleTextSelection);
+        viewerElement.addEventListener('touchend', handleTextSelection);
+    }
+    
+
+
+    function handleTextSelection() {
+        const selection = window.getSelection();
+        const text = selection.toString().trim();
+        
+        if (text && text.length > 0) {
+            console.log("Selected text:", text);
+            selectedText = text;
+            modalDiv.style.display = "block";
+            sourceLang = languageSel;
+            languageSel = setLanguage(sourceLang);
+            translationText = text;
+            updateTranslation(text);
+        }
+    }
+
+    // Fix the extractVisibleText function to handle errors better
+    function extractVisibleText() {
+        console.log("extractVisibleText called");
+        const location = rendition.currentLocation();
+        console.log("Current location:", location);
+
+        const makeRangeCfi = (a, b) => {
+                const CFI = new ePub.CFI()
+                const start = CFI.parse(a), end = CFI.parse(b)
+                const cfiRange = {
+                    range: true,
+                    base: start.base,
+                    path: {
+                        steps: [],
+                        terminal: null
+                    },
+                    start: start.path,
+                    end: end.path
+                }
+                const len = cfiRange.start.steps.length
+                for (let i = 0; i < len; i++) {
+                    if (CFI.equalStep(cfiRange.start.steps[i], cfiRange.end.steps[i])) {
+                        if (i == len - 1) {
+                            if (cfiRange.start.terminal === cfiRange.end.terminal) {
+                                cfiRange.path.steps.push(cfiRange.start.steps[i])
+                                cfiRange.range = false
+                            }
+                        } else cfiRange.path.steps.push(cfiRange.start.steps[i])
+                    } else break
+                }
+                cfiRange.start.steps = cfiRange.start.steps.slice(cfiRange.path.steps.length)
+                cfiRange.end.steps = cfiRange.end.steps.slice(cfiRange.path.steps.length)
+
+                return 'epubcfi(' + CFI.segmentString(cfi.base)
+                    + '!' + CFI.segmentString(cfi.path)
+                    + ',' + CFI.segmentString(cfi.start)
+                    + ',' + CFI.segmentString(cfi.end)
+                    + ')'
+            }
+
+        if (location && location.start && location.end) {
+            const rangeCfi = makeRangeCfi(location.start.cfi, location.end.cfi);
+            console.log("Range CFI created:", rangeCfi);
+            
+            currentBook.getRange(rangeCfi)
+                .then(range => {
+                    if (range) {
+                    selectedText = range.toString();
+                    console.log("Raw selected text:", selectedText);
+                    
+                    // Clean up text
+                    selectedText = cleanText(selectedText);
+                    console.log("Cleaned selected text:", selectedText);
+                    
+                        lines = selectedText.split('.')
+                            .map(line => line.trim())
+                            .filter(line => line.length > 0)
+                            .map(line => line + '.');
+                        
+                    console.log("Lines array:", lines);
+                    console.log("Number of lines:", lines.length);
+                    } else {
+                        console.log("Range is null or undefined");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error getting range:', error);
+                    // Initialize empty lines array to prevent further errors
+                    lines = [];
+                });
+        } else {
+            console.log("Location is invalid:", location);
+        }
+    }
+    
+    // Separate text cleaning function
+    function cleanText(text) {
+        const regexMatch = /[A-Z]\./g;
+        text = text.replace(regexMatch, match => match.replace('.', ''));
+        
+        abbreviations.forEach(abbr => {
+            let clean = abbr.replaceAll(".", "");
+            text = text.replaceAll(abbr, clean);
+        });
+        
+        return text;
+    }
+
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        console.log("email:", emailRegex);
+        return emailRegex.test(email);
+    }
+
+    // Add this function to handle book data responses
+    function handleBookDataResponse(response) {
+            console.log("response:", response);
+
+        
+          
+
+            // Set selectedBook from the response filename
+            selectedBook = response.filename;
+            console.log("Set selectedBook:", selectedBook);
+
+            // Set language from response
+            sourceLang = response.language;
+            languageSel = setLanguage(sourceLang);
+            console.log("epub:", response.epub);
+            const base64Data = response.epub.split(',')[1];
+            console.log("Base64 data:", base64Data);
+            if (!base64Data) {
+                throw new Error('Invalid EPUB data format');
+            }
+
+            const mimeString = response.epub.split(',')[0].split(':')[1].split(';')[0];
+            const byteString = atob(base64Data);
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            
+            const blob = new Blob([ab], {type: mimeString});
+            
+            // Render the book
+            renderEpub(blob).then(() => {
+                if (response.page) {
+                    rendition.display(response.page);
+                }
+                if (booksModal) {
+                    booksModal.style.display = 'none';
+                }
+            }).catch(error => {
+                console.error('Error rendering book:', error);
+                alert('Error rendering book: ' + error.message);
+            });
+
+    
+    }
+
+
+
+    function updatePointsDisplay(points) {
+        // Update all points displays
+        const pointsDisplays = document.querySelectorAll('#points');
+        pointsDisplays.forEach(element => {
+            element.textContent = points;
+        });
+
+        // Make sure points display is visible
+        const pointsDisplayDivs = document.querySelectorAll('#points-display');
+        pointsDisplayDivs.forEach(div => {
+            div.style.display = 'block';
+            div.style.textAlign = 'center';
+            div.style.fontSize = '1em';
+            div.style.fontWeight = 'bold';
+        });
+    }
+
+    // Add this new function
+    function updateTimer() {
+        const timerElement = document.querySelector('.timer');
+        if (timerElement && processingStartTime) {
+            const elapsedTime = (Date.now() - processingStartTime) / 1000; // Convert to seconds
+            timerElement.textContent = `${elapsedTime.toFixed(1)}s`;
+        }
+    }
+
+    
+
+    // Add this function to update the sentence display
+    function updateSentenceDisplay() {
+        //document.getElementById('sentenceDisplay').textContent = allSentences[currentSentenceIndex];
+        document.getElementById('sentenceDisplay').textContent = currentDailySentences[currentSentenceIndex];
+        document.getElementById('sentenceCounter').textContent = 
+            //`${currentSentenceIndex + 1} / ${allSentences.length}`;
+            `${currentSentenceIndex + 1} / ${totalDailySentences}`;
+    }
+
+    // Add this new function to convert CFIs
+    function convertCfiForServer(clientCfi) {
+        console.log("Original CFI:", clientCfi);
+        
+        // If no CFI is available, return null
+        if (!clientCfi) return null;
+        
+        // Extract the spine index from the CFI
+        const spineMatch = clientCfi.match(/\/([0-9]+)!/);
+        if (!spineMatch || spineMatch.length < 2) {
+            console.error("Could not extract spine index from CFI");
+            return clientCfi; // Return original if we can't parse it
+        }
+        
+        // Get the spine index from the CFI (JavaScript format)
+        const jsSpineIndex = parseInt(spineMatch[1]);
+        
+        // Convert to Python-compatible spine index (handle the off-by-two difference)
+        // This is an approximation based on our testing - may need adjustment
+        const pySpineIndex = jsSpineIndex - 2; // JS uses 4, Python uses 2 for same content
+        
+        // Create a simplified CFI that focuses just on the spine position
+        // This is more likely to be interpreted correctly by the server
+        const simplifiedCfi = `epubcfi(/6/${pySpineIndex}!/)`;
+        
+        console.log("Converted CFI:", simplifiedCfi);
+        return simplifiedCfi;
+    }
+
+    // Get the current spine position directly from the reader
+    function getCurrentSpinePosition() {
+        try {
+            if (rendition && rendition.location) {
+                const location = rendition.location.start;
+                if (location && location.index) {
+                    return location.index;
+                }
+            }
+        } catch (error) {
+            console.error("Error getting spine position:", error);
+        }
+        return 0; // Default to 0 if we can't determine position
+    }
+
+    // Get text surrounding the current position to help with content matching
+    function getTextAroundCurrentPosition(charCount) {
+        try {
+            if (rendition && rendition.getContents().length > 0) {
+                const contents = rendition.getContents()[0];
+                const win = contents.window;
+                const selection = win.getSelection();
+                
+                // If there's a selection, use that as the center point
+                if (selection && selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    const startNode = range.startContainer;
+                    
+                    // Get the parent paragraph or element
+                    let parentElement = startNode;
+                    while (parentElement && parentElement.nodeType !== 1) {
+                        parentElement = parentElement.parentNode;
+                    }
+                    
+                    if (parentElement) {
+                        // Return the text content of this element
+                        return parentElement.textContent.trim();
+                    }
+                }
+                
+                // If no selection, try to get text from current visible area
+                const visibleElements = contents.document.querySelectorAll('p, div');
+                for (let i = 0; i < visibleElements.length; i++) {
+                    const rect = visibleElements[i].getBoundingClientRect();
+                    // Check if element is visible in viewport
+                    if (rect.top >= 0 && rect.bottom <= win.innerHeight) {
+                        return visibleElements[i].textContent.trim();
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Error getting text context:", error);
+        }
+        return ""; // Return empty string if we can't get context
+    }
+
+    tutorialBtn.addEventListener(EVENT_TYPE, () => {
+        const tutorialModal = document.getElementById('tutorialModal');
+        const tutorialContent = document.getElementById('tutorial-content');
+        
+        // Show modal with loading spinner
+        tutorialModal.style.display = "block";
+        
+        // Fetch the tutorial content
+        fetch('tutorial.html')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(html => {
+                tutorialContent.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading tutorial:', error);
+                tutorialContent.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <h3>Error loading tutorial content</h3>
+                        <p>Please try again later.</p>
+                    </div>
+                `;
+            });
+    });
+
+    // Make sure the close button works properly for the tutorial modal
+    document.querySelectorAll('#tutorialModal .close').forEach(closeBtn => {
+        closeBtn.addEventListener(EVENT_TYPE, () => {
+            document.getElementById('tutorialModal').style.display = 'none';
+        });
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener(EVENT_TYPE, (event) => {
+        const tutorialModal = document.getElementById('tutorialModal');
+        if (event.target === tutorialModal) {
+            tutorialModal.style.display = 'none';
+        }
+    });
+
+    initDailypages.addEventListener(EVENT_TYPE, () => {
+
+        window.location.href = 'pagele.html';
+    })
+    document.getElementById("toPages").addEventListener(EVENT_TYPE, () => {
+        window.location.href = 'pagele.html';
+    })
+
+    initFreeRead.addEventListener(EVENT_TYPE,() => {
+        div2viewer.style.display = "Flex";
+        initChoice.style.display = "none";
+    })
+
+    // Add this new function to handle TTS responses
+    function handleTTSResponse(response) {
+        console.log("Received TTS response:", response);
+        
+        // Stop any previously playing audio
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+        }
+        
+        // Create and play audio element with the base64 audio data
+        const audio = new Audio(response.audio);
+        currentAudio = audio;
+        
+        // Add event listeners for state management
+        audio.onended = () => {
+            console.log('Speech ended');
+            textToSpeechBtn.setAttribute('data-speaking', 'false');
+            textToSpeechBtn.style.filter = 'brightness(1)';
+            currentAudio = null;
+        };
+        
+        audio.onerror = (e) => {
+            console.error('Speech error:', e);
+            textToSpeechBtn.setAttribute('data-speaking', 'false');
+            textToSpeechBtn.style.filter = 'brightness(1)';
+            currentAudio = null;
+        };
+        
+        // Play the audio
+        audio.play();
+    }
+
+    // Initialize Stripe
+    const stripe = Stripe('pk_live_51R936ZH6FESgUvUmI0Gu1qfxauHRtqnx9Usx1UkQQgzOVGC2e5MIhKopUsPcSw1n3XfUF8qZyuL7ZGb1wYUOR8DG007A0ipkpw');
+    let elements;
+
+    // Add tip button event listeners
+    document.querySelectorAll('.tip-button').forEach(button => {
+        button.addEventListener(EVENT_TYPE, async () => {
+            const amount = button.dataset.amount;
+            await initiateTip(amount);
+        });
+    });
+
+    document.getElementById('custom-tip-button').addEventListener(EVENT_TYPE, async () => {
+        const amount = document.getElementById('custom-tip').value;
+        if (amount && amount > 0) {
+            await initiateTip(amount);
+        } else {
+            alert('Please enter a valid amount');
+        }
+    });
+
+    async function initiateTip(amount) {
+        try {
+            // Show payment modal
+            document.getElementById('payment-modal').style.display = 'block';
+            
+            // Request payment intent from server
+            sendSocketMessage({
+                task: 'tip',
+                amount: amount
+            });
+            
+            // The server will respond with a client secret
+            // This will be handled in the WebSocket message handler
+        } catch (error) {
+            console.error('Error initiating tip:', error);
+            alert('Error processing tip. Please try again.');
+        }
+    }
+
+ 
+
+    // Add styles for tip section
+    const style = document.createElement('style');
+    style.textContent = `
+        .tip-amounts {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tip-button {
+            padding: 8px 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tip-button:hover {
+            background: #f0f0f0;
+        }
+        
+        #tip-custom {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        #custom-tip {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        #payment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        #payment-modal .modal-content {
+            background: white;
+            margin: 15% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+        
+        #payment-element {
+            margin: 20px 0;
+        }
+        
+        #submit-payment {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        #submit-payment:hover {
+            background: #45a049;
+        }
+        
+        #payment-message {
+            margin-top: 10px;
+            color: #666;
+        }
+    `;
+    document.head.appendChild(style);
+
+</script>

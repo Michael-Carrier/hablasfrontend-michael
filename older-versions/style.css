@@ -1,0 +1,2011 @@
+body {
+    background-color:  #a9d1d7;
+    margin: 1%;
+    overflow: hidden;
+    width: 99vw; 
+    height: 90svh;
+    justify-content:center;
+    align-items: center; 
+
+    }
+#input_sentence {
+    
+    margin-top:2%;
+    
+}
+div {
+    padding: 0.5%;
+    
+}
+
+#title {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    color: white;
+    padding: 1%;
+    display: flex; /* Use flexbox for the main title container */
+    justify-content: space-between; /* Put space between the children */
+    align-items: center; /* Vertically align items in the center */
+    margin-left: 4%;
+    min-height: 40px;
+    height: 5%;
+    width: 90vw;
+}
+
+/* The webapp name */
+#title p {
+    margin: 0; /* Remove float as flexbox handles positioning */
+}
+
+/* Wrapper for both user-section and settings */
+#title-right {
+    display: flex; /* Use flexbox to arrange user-section and settings */
+    align-items: center; /* Vertically align items */
+    gap: 10px; /* Space between user-section and settings */
+}
+
+#user-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#settings {
+    height: 100%;
+    width: auto !important;
+    aspect-ratio: 1/1;
+    padding: 1%;
+    cursor: pointer;
+    max-width: none !important; /* Remove unnecessary !important */
+    z-index: auto !important; /* Reset z-index, likely not needed */
+}
+
+#div2viewer {
+    margin: auto;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    background-color: #f9f9f9; /* Light background color */
+    border: 1px solid #ccc; /* Light grey border! */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    width: 90%; /* Full width */
+    height: 55svh; /* Automatic height */
+    background-blend-mode: overlay; /* Blend texture with background color */
+    padding: 0; /* Remove padding that might cause overflow */
+    display: none; /* Make it a flex container */
+    flex-direction: column; /* Stack children vertically */
+    overflow: hidden; /* Prevent overflow */
+}
+
+
+#div3 {
+    
+    font-family: 'Monserrat', sans-serif;
+    font-weight: 300;
+    padding: auto;
+    margin: auto;
+    margin-top: 2%;
+    
+width:90%;
+}
+#file-input {
+    display: none;
+}
+#wrong {
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+}
+#viewer {
+    flex: 1;
+    position: relative;
+    height: 100%; /* Ensure viewer takes full height */
+    width: 100%; /* Take full width of container */
+    overflow: hidden; /* Hide scrollbars but allow ePub pagination */
+    border: 1px solid #ccc;
+    user-select: text; /* Enables text selection */
+}
+
+#navigation {
+    display: none;
+}
+
+.movingBtns {
+    background-color: #A9A9A9;
+    color: white; /* White text */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 20px; /* Padding */
+    text-align: center; /* Center text */
+    text-decoration: none; /* Remove underline */
+    display: inline-block; /* Inline-block for spacing */
+    font-size: 16px; /* Font size */
+    margin: 10px 2px; /* Margin around buttons */
+    cursor: pointer;
+    transition: background-color 0.3s,
+
+}
+.movingBtns:hover {
+    
+    background-color:  #8c8b8b;
+    transition: all 0.3s ease;  /* Smooth transition for all changes */
+    transform: translateX(3.5%);
+}
+
+#file {
+    display: flex;
+    background-color: #4588a0; 
+    font-family: 'Roboto', sans-serif;
+    color: white; /* White text */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 20px; /* Padding */
+    font-size: 16px; /* Font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+    width: 70%;
+    }
+
+#selectedText {
+    flex: 5;
+}
+
+#robot {
+    background-color: #A76D9A;
+    flex-grow: 0;
+    margin-left: auto; 
+    width: auto;
+    height: 100%;
+    cursor: pointer;
+    margin: auto;
+    
+    
+}
+
+#return_sentence {
+    flex:5;
+    border-radius: 10px;
+    border : 0.02rem solid #6bd8ff;
+}
+img {
+    height: 100%; /* Maintain aspect ratio */
+    max-width: 25%; /* Ensure the image is responsive */    
+    margin: auto auto; /* Center the image */
+}
+
+
+#title-right {
+    float:right;
+
+    height:100%;
+    display: inline-flex;
+    margin-right: 0; 
+}
+
+#book img {
+    max-width: 100%;
+}
+#myModal {
+    display: none;
+    width: 90%;
+    height: 40svh;
+    background-color: white;
+    z-index: 99999 !important;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin: auto; 
+}
+#books-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    margin: auto;
+    width: 80% !important;
+    height: 80% !important;
+    z-index: 1000;
+}
+#modal-content {
+    height: 100%;
+}
+#books-modal .modal-content {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    position: relative;
+    overflow-y: auto;
+}
+
+.modal-overlay {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 99998 !important;
+    display: none;
+}
+
+/* Remove or modify the general .modal class */
+.modal {
+    display: none;
+    position: fixed;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 99;
+    width: 100%;
+    height: 100%;
+}
+
+.close {
+    margin-left: auto;
+    order:2;
+    cursor: pointer;
+}
+
+#top-popout{
+  flex:1;
+  display: flex;
+  justify-content: flex-end; /* Add this */
+
+   
+}
+#modal-main {
+    display: flex;
+    flex-direction: column;
+    flex: 10;
+    height: 30%;
+}
+
+
+#translation {
+    font-size: 12px;
+}
+
+#actionButtons {
+    display: flex; /*if i dont put this, the buttons will be in a column*/ 
+    flex-direction:row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    height:20%;/* Give it some breathing room */
+
+}
+
+#actionButtons img {
+    padding: 5px 10px; 
+    height: 50%;
+    object-fit: contain;
+    
+}
+#bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;  /* space between rows */
+}
+
+.bottom-row {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+#points-display {
+    color: black;  
+    font-size: 1.1em;
+    visibility: visible;
+}
+    
+.text-container {
+    flex: 9; /* Takes up all available space in the flex container */
+    overflow-y: auto; /* Adds vertical scroll when content is too tall */
+    padding: 20px;
+    margin-bottom: 60px;
+    border-radius: 10px;
+    border : 0.02rem solid #c7f6fd;
+    background-color: #c7f6fd;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Add shadow for 3D effect */
+}
+.darkerGrey {
+    background-color: #A76D9A;
+}
+
+.darkerGrey:hover {
+    background-color: #7a4e70;
+}
+
+#fileInput{
+    display: none;
+    visibility: hidden;
+}
+
+.drawer {
+    height: 100%;
+    width: 30%;
+    background-color: #e9f0f3;
+    transition: transform 0.3s ease;
+    right: 0;
+    top: 0;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+    font-family: 'Quicksand', sans-serif;
+    position: fixed !important;
+    overflow-x: hidden;
+    z-index: 99999 !important; /* Force this to be above everything */
+}
+.drawer .close{
+    transform: translateX(100%);
+}
+.drawer.open {
+    transform: translateX(0);
+}
+
+.options {
+    margin-bottom: 7%;
+    cursor: pointer;
+}
+.options:hover {
+    background-color:  #a9d1d7;
+    transition: all 0.3s ease;  /* Smooth transition for all changes */
+    transform: translateX(3.5%);
+    border-radius: 7%; 
+    padding: 1%;
+    margin-right: 7%;
+}
+
+#language-select {
+    display: flex;
+    background-color:rgb(225, 242, 253);
+    color:  #4588a0;;
+    border: none;
+    border-radius: 1%;
+    padding: auto;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width:30%;
+    margin :auto;
+}
+/* Style for the options in the dropdown */
+#language-select option {
+    background-color: white;
+    color: #4588a0;
+    padding: 10px;
+    font-family: 'Roboto', sans-serif;
+    
+}
+/* Optional hover effect */
+#language-select:hover {
+    background-color: #3a7286;
+}
+#books-grid {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    padding: 20px;
+    max-height: 70%; /* Limits height to enable scrolling */
+    overflow-y: auto; /* Adds vertical scrollbar */
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+}
+
+.language-section {
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.books-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.book {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.book:hover {
+    transform: scale(1.05);
+}
+
+.book img {
+    max-width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.book-title {
+    margin-top: 8px;
+    text-align: center;
+    font-size: 0.9em;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.language-section h2 {
+    margin-left: 20px;
+    color: #333;
+    font-family: 'Quicksand', sans-serif;
+}
+
+/* Style the scrollbar */
+#books-grid::-webkit-scrollbar {
+    width: 8px;
+}
+
+#books-grid::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+#books-grid::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+#books-grid::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+#languageUser {
+    display: block;
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 7%;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    font-size:15;
+    
+}
+
+#languageUser:hover {
+    background-color:  #a9d1d7;
+    transition: all 0.3s ease;  /* Smooth transition for all changes */
+    transform: translateX(3.5%);
+    border-radius: 7%; 
+    padding: 1%;
+    margin-right: 7%;
+}
+
+
+
+.vertical-slider {
+display: inline-block;
+writing-mode: bt-lr; /* For Firefox */
+-webkit-appearance: slider-vertical; /* For Chrome */
+width: 3%;
+height: 100%;
+padding: 1%;
+margin: 0;
+
+}
+#bottom {
+display: flex;
+flex-direction: row;
+align-items: center;
+width: 100%; /* Set explicit width instead of auto */
+min-height: fit-content;
+min-width: fit-content;
+overflow: visible; /*prevents clipping*/
+padding: 10px;
+}
+
+#user-modal {
+display: none;
+}
+
+.user-modal {
+display: none;  /* This ensures the modal is hidden initially */
+justify-content: center;
+align-items: center;
+}
+
+.user-modal-content {
+position: relative;  /* Needed for absolute positioning, relative to the parent (modal) */
+padding: 20px;      /* Give some space around the content */
+}
+
+.user-modal .close {
+position: absolute;  /* Position relative to modal-content */
+right: 10px;        /* Distance from right edge */
+top: 10px;          /* Distance from top edge */
+font-size: 24px;    /* Make it bigger */
+cursor: pointer;    /* Show pointer on hover */
+font-weight: bold;  /* Make it bolder */
+}
+
+/* Optional: make it look nicer on hover */
+.user-modal .close:hover {
+color: #888;
+}
+
+/* Add this new CSS - specific to this modal's close button */
+.options-close {
+position: absolute;
+right: 10px;
+top: 10px;
+font-size: 24px;
+cursor: pointer;
+}
+
+/* Or even more specific if needed */
+#user-account-options-modal .options-close {
+position: absolute;
+right: 10px;
+top: 10px;
+font-size: 24px;
+cursor: pointer;
+}
+
+#inputs-account {
+display: flex;
+flex-direction: column;
+margin-bottom: 15px; 
+}
+
+#buttons-account {
+display: flex;
+flex-direction: column;
+
+}
+
+/* Add these new styles */
+.popup {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px 25px 10px 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    min-width: 100px;
+    max-width: 300px;
+    position: relative;
+}
+
+.popup p {
+    margin: 0;
+    padding: 5px;
+    font-size: 16px;
+}
+
+.popup-close {
+    color: #aaa;
+    transition: color 0.2s;
+}
+
+.popup-close:hover {
+    color: #333;
+}
+
+/* Media queries for mobile devices */
+@media screen and (max-width: 768px) {
+    body {
+        width: 100vw;
+        margin: 0;
+        padding: 0;
+    }
+
+
+
+
+    .text-container {
+        margin-bottom: 20px;
+    }
+
+
+    .popup {
+        position: fixed; /* Change to fixed positioning */
+        bottom: 20%; /* Position from bottom */
+        left: 50%; /* Center horizontally */
+        transform: translateX(-50%); /* Center adjust */
+        width: 80%; /* Width relative to screen */
+        max-width: none;
+        background-color: rgba(255, 255, 255, 0.95);
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        z-index: 99; /* Ensure it's above other elements */
+    }
+
+    .drawer {
+        width: 80%; /* Wider drawer on mobile */
+    }
+
+    #language-select {
+        width: 50%;
+    }
+
+    #bottom {
+        padding: 5px;
+    }
+
+    .vertical-slider {
+        width: 5%;
+    }
+
+    
+}
+
+/* Add styles for individual lines in the viewer */
+#viewer p, #viewer span {
+    cursor: pointer;
+    padding: 2px 4px;
+    margin: 2px 0;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+}
+
+#viewer p:hover, #viewer span:hover {
+    background-color: rgba(169, 209, 215, 0.3);
+}
+
+#viewer .selected-line {
+    background-color: rgba(169, 209, 215, 0.5);
+}
+
+/* Media query for mobile devices */
+@media screen and (max-width: 768px) {
+    #viewer svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Viewer container with side navigation buttons */
+#viewer-container {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden; /* Prevent container overflow */
+}
+
+.side-nav-btn {
+    background: rgba(69, 136, 160, 0.2);
+    border: none;
+    width: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    z-index: 10;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+.side-nav-btn:hover {
+    background: rgba(69, 136, 160, 0.4);
+}
+
+.side-nav-btn span {
+    color: #4588a0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* For mobile responsiveness */
+@media (max-width: 768px) {
+    .side-nav-btn {
+        width: 25px;
+    }
+    
+    .side-nav-btn span {
+        font-size: 14px;
+    }
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    padding: 5px;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: black;
+    text-decoration: none;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .close-modal {
+        font-size: 32px;
+        width: 40px;
+        height: 40px;
+    }
+}
+
+
+
+.status-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(69, 136, 160, 0.3);
+    border-radius: 50%;
+    border-top-color: #4588a0;
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 8px;
+}
+
+.status-message {
+    font-size: 14px;
+    color: #4588a0;
+    font-weight: 500;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.settings-select {
+    width: 90%;
+    margin: 8px auto 16px;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    font-size: 14px;
+    display: block;
+}
+
+/* Improve spacing in settings drawer */
+#settings-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+}
+
+.options {
+    margin-top: 12px;
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+#empty-viewer-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    color: #4588a0;
+    font-family: 'Lato', sans-serif;
+}
+
+#empty-viewer-message p {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+#browse-books-btn {
+    background-color: #4588a0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#browse-books-btn:hover {
+    background-color: #366b7c;
+}
+
+
+.wrong {
+    background-color: #ff6b6b;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 2px;
+    transition: filter 0.2s ease;
+    color: white;
+    border: none;
+    font-size: inherit;
+}
+
+.wrong:hover {
+    filter: brightness(0.9);
+}
+
+.wrong.pressed {
+    filter: brightness(0.7);
+}
+/* Add these styles */
+.loading-spinner {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+#tutorialModal .modal-content {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+#tutorialModal.modal {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Tutorial Modal Styles */
+#tutorialModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    display: none;
+}
+
+#tutorialModal .modal-content {
+    position: relative;
+    background-color: #f9f9f9;
+    margin: 5vh auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 800px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-height: 90vh;
+    overflow-y: auto;
+    font-family: 'Roboto', sans-serif;
+}
+
+#tutorialModal .tutorial-title {
+    color: #4588a0;
+    text-align: center;
+    margin-bottom: 30px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+}
+
+#tutorialModal .tutorial-step {
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+#tutorialModal .tutorial-step h3 {
+    color: #4588a0;
+    margin-bottom: 15px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+}
+
+#tutorialModal .tutorial-step p,
+#tutorialModal .tutorial-step li {
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+#tutorialModal .tutorial-images {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+#tutorialModal .tutorial-images img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#tutorialModal .icon-button {
+    width: 80px;
+    height: 80px;
+    display: block;
+    margin: 20px auto;
+}
+
+#tutorialModal .close-modal {
+    position: sticky;
+    top: 10px;
+    float: right;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 100;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    padding: 5px;
+    margin-bottom: -30px;
+}
+
+#tutorialModal .close-modal:hover {
+    color: #333;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Update media queries section */
+@media screen and (max-width: 768px) {
+    #tutorialModal .modal-content {
+        width: 95%;
+        margin: 3vh auto;
+        padding: 15px;
+    }
+
+    #tutorialModal .tutorial-step {
+        padding: 15px;
+    }
+
+    #tutorialModal .close-modal {
+        font-size: 32px;
+        width: 40px;
+        height: 40px;
+    }
+
+    #tutorialModal .icon-button {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+#pageleModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 10px;
+    padding: 20px;
+    max-width: 600px;
+    z-index: 9000 !important;
+    display: none;
+    height: auto;
+    width: auto;
+}
+
+#initChoice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    margin: 0 auto;
+    width: 80%;
+    height: auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Login screen styling - similar to initChoice */
+#login-screen {
+    display: none; /* Initially hidden */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    margin: 0 auto;
+    width: 80%;
+    height: auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#login-section {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    width: 80%;
+    max-width: 400px;
+}
+
+#login-section h2 {
+    color: #333;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+#login-section h3 {
+    color: #666;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    font-family: 'Lato', sans-serif;
+}
+
+#login-section input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+#login-section .options {
+    padding: 10px;
+    text-align: center;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#login-section .options:hover {
+    background-color: #45a049;
+}
+
+#initChoice h2 {
+    color: #333;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+.intro-text {
+    color: #666;
+    font-size: 1.2em;
+    margin-bottom: 40px;
+    font-family: 'Lato', sans-serif;
+}
+
+.choice-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+    max-width: 800px;
+    flex-direction: column;
+    align-items: center;
+}
+
+.choice-option {
+    flex: 1;
+    background: white;
+    border-radius: 15px;
+    padding: 40px 30px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 280px;
+    width: 90%;
+    max-width: 400px;
+    margin-bottom: 25px;
+    border: 2px solid #f0f0f0;
+}
+
+.choice-option:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.choice-option:active {
+    transform: translateY(2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.choice-icon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+}
+
+.choice-option h3 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 1.8em;
+    margin: 15px 0;
+    color: #222;
+}
+
+.choice-option p {
+    color: #555;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.2em;
+    line-height: 1.5;
+}
+
+#initDailypages, #initFreeRead {
+    display: block;
+    width: 80%;
+    max-width: 400px;
+    margin: 15px auto;
+    padding: 20px;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: bold;
+    border-radius: 5px; /* More square-shaped */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Roboto', sans-serif;
+    background: transparent; /* Transparent background */
+    border-width: 3px;
+    border-style: solid;
+}
+
+#initDailypages {
+    border-color: #4A90E2;
+    color: #4A90E2;
+}
+
+#initFreeRead {
+    border-color: #50C878;
+    color: #50C878;
+}
+
+#initDailypages:hover, #initFreeRead:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+#initDailypages:active, #initFreeRead:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+    #initDailypages, #initFreeRead {
+        width: 90%;
+        padding: 25px 15px;
+        font-size: 1.6rem;
+        margin: 20px auto;
+    }
+}
+
+/* Pagele Modal Styling */
+#pagele-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 9000;
+    align-items: center;
+    justify-content: center;
+}
+
+#pagele-modal .modal-content {
+    position: relative;
+    padding: 20px;
+    width: auto;
+    max-width: 800px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: visible;
+}
+
+#pagele-list-container {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 10px 0;
+}
+
+#pagele-list {
+    display: block;
+    padding: 0;
+    margin: 0;
+}
+
+.pagele-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 10px;
+}
+
+.pagele-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.pagele-cover {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+
+
+.pagele-language {
+    color: #4588a0;
+    font-size: 0.9em;
+    margin-bottom: 4px;
+}
+
+.pagele-sentences {
+    font-size: 0.8em;
+    color: #666;
+}
+
+/* Chapters Modal Styling */
+#chapters-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 9000;
+    align-items: center;
+    justify-content: center;
+}
+
+#chapters-modal .modal-content {
+    position: relative;
+    background-color: #f9f9f9;
+    padding: 20px;
+    width: 90%;
+    max-width: 800px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+#chapters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.chapter-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 15px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.chapter-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.chapter-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-align: center;
+    font-family: 'Quicksand', sans-serif;
+}
+
+.chapter-points {
+    font-size: 0.9em;
+    color: #4588a0;
+}
+
+/* Sentence Modal Styling */
+#sentence-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 9000;
+    align-items: center;
+    justify-content: center;
+}
+
+#sentence-modal .modal-content {
+    position: relative;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 10px;
+    padding: 20px;
+    height: 80vh;
+    width: 90vw;
+    max-width: 800px;
+}
+
+#chapter-title {
+    text-align: center;
+    color: #4588a0;
+    margin: 0 0 15px 0;
+    font-family: 'Quicksand', sans-serif;
+}
+
+#sentence-container, #prediction-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    height: 20%;
+    display: block;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+    font-size: 1.3em;
+    margin: 0;
+    line-height: 1.6;
+    font-family: 'Lato', sans-serif;
+    overflow-y: auto;
+}
+
+
+
+
+
+#sentence-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+#sentence-counter {
+    display: block;
+    text-align: center;
+    width: 70%;
+    font-size: 1.5em;
+    padding: 2% 0%;
+    color: #666;
+}
+
+#points, #points-display {
+    font-size: 1.5em;
+    padding: 2% 0%;
+    color: #666;
+}
+
+#prev-sentence, #next-sentence {
+    background-color: #ffffff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#prev-sentence:hover, #next-sentence:hover {
+    background-color: #366b7c;
+}
+
+#prev-sentence:disabled, #next-sentence:disabled {
+    background-color: #ccc;
+    cursor: default;
+}
+
+/* Recording Status Styling */
+#recording-status {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 99;
+    border-radius: 8px;
+}
+
+.timer {
+    color: white;
+    font-size: 1.2em;
+    margin-top: 10px;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    #pagele-list {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
+    
+    .pagele-cover {
+        height: 160px;
+    }
+    
+    #chapters-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+    
+ 
+    
+    #prev-sentence, #next-sentence {
+        padding: 6px 12px;
+        font-size: 0.9em;
+    }
+}
+
+/* Force all pagele elements to have lower z-index */
+#pagele-modal, 
+#chapters-modal, 
+#sentence-modal,
+#books-modal,
+#recording-status,
+.modal-content,
+#tutorialModal {
+    z-index: 9000 !important;
+}
+
+
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    filter: grayscale(50%);
+}
+#init-login-section {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    width: 80%;
+    max-width: 400px;
+}
+#init-login-section input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+#init-login-section .options {
+    padding: 10px;
+    text-align: center;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+#init-login-section .options:hover {
+    background-color: #45a049;
+}
+
+/* Pagele Language Section Styles */
+.pagele-language-section {
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.pagele-language-header {
+    background: rgb(240, 240, 240);
+    color: rgb(0, 0, 0);
+    padding: 15px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.pagele-language-header:hover {
+    background: linear-gradient(135deg, #366b7c, #2a5463);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.pagele-language-header h3 {
+    margin: 0;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 1.4em;
+}
+
+.pagele-expand-icon {
+    font-size: 1.2em;
+    transition: transform 0.3s ease;
+    font-weight: bold;
+}
+
+.pagele-books-container {
+    background-color: white;
+    transition: all 0.4s ease;
+    overflow: hidden;
+}
+
+.pagele-books-container.collapsed {
+    max-height: 0;
+    padding: 0 20px;
+    opacity: 0;
+}
+
+.pagele-books-container.expanded {
+    max-height: 1000px;
+    padding: 20px;
+    opacity: 1;
+}
+
+.pagele-books-container .pagele-card {
+    display: inline-block;
+    margin: 10px;
+    vertical-align: top;
+    width: 140px;
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.pagele-books-container .pagele-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-color: #4588a0;
+}
+
+.pagele-books-container .pagele-cover {
+    width: 100%;
+    max-width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
+}
+
+.pagele-books-container .pagele-title {
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.9em;
+    line-height: 1.3;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+/* Update the main pagele list container */
+#pagele-list {
+    display: block;
+    padding: 0;
+    margin: 0;
+}
+
+#pagele-list-container {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .pagele-language-header {
+        padding: 12px 15px;
+    }
+    
+    .pagele-language-header h3 {
+        font-size: 1.2em;
+    }
+    
+    .pagele-books-container.expanded {
+        padding: 15px;
+    }
+    
+    .pagele-books-container .pagele-card {
+        width: 120px;
+        margin: 8px;
+    }
+    
+    .pagele-books-container .pagele-cover {
+        height: 150px;
+    }
+    
+    .pagele-books-container .pagele-title {
+        font-size: 0.8em;
+        padding: 8px;
+        min-height: 35px;
+        overflow-wrap: break-word;
+     hyphens: auto;
+    }
+}
+
+/* Add smooth scrolling to the container */
+#pagele-list-container {
+    scroll-behavior: smooth;
+}
+
+/* Remove the old grid styles that are no longer needed */
+#pagele-list {
+    display: block !important;
+    grid-template-columns: none !important;
+    gap: 0 !important;
+}
+
+/* Additional styles for pagele functionality */
+.hold-button {
+    margin-top: 10px;
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    transition: background-color 0.2s;
+}
+
+.hold-button:active {
+    background-color: #0056b3;
+}
+
+.sentence-info-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Tip section styles */
+.tip-amounts {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+}
+
+.tip-button {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tip-button:hover {
+    background: #f0f0f0;
+}
+
+#tip-custom {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+#custom-tip {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#payment-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9001;
+    overflow-y: auto;
+}
+
+#payment-modal .modal-content {
+    background: white;
+    margin: 15% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    overflow-y: auto;
+}
+
+#payment-element {
+    margin: 20px 0;
+}
+
+#submit-payment {
+    background: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+#submit-payment:hover {
+    background: #45a049;
+}
+
+#payment-message {
+    margin-top: 10px;
+    color: #666;
+}
+
+/* Mode selection styles */
+.mode-container {
+    display: none;
+}
+
+.mode-container.active {
+    display: block;
+}
+
+/* Bug report button styling */
+#found-bug {
+    background-color: #ff6b6b !important;
+    color: white !important;
+    border: 1px solid #ff5252 !important;
+}
+
+#found-bug:hover {
+    background-color: #ff5252 !important;
+}
+
+/* Subscription section styles */
+.subscription-section {
+    border-top: 1px solid #ccc;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.subscription-status {
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.subscription-status.active {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.subscription-status.inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.subscription-status.pending {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.subscription-button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 5px 0;
+    transition: background-color 0.3s;
+}
+
+.subscription-button.subscribe {
+    background-color: #28a745;
+    color: white;
+}
+
+.subscription-button.subscribe:hover {
+    background-color: #218838;
+}
+
+.subscription-button.cancel {
+    background-color: #dc3545;
+    color: white;
+}
+
+.subscription-button.cancel:hover {
+    background-color: #c82333;
+}
+
+.subscription-button.disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#subscription-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9002;
+    overflow-y: auto;
+}
+
+#subscription-modal .modal-content {
+    background: white;
+    margin: 10% auto;
+    padding: 25px;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 10px;
+    overflow-y: auto;
+}
+
+.subscription-plan {
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 15px 0;
+    text-align: center;
+    transition: border-color 0.3s;
+}
+
+.subscription-plan.featured {
+    border-color: #28a745;
+    background-color: #f8fff9;
+}
+
+.plan-price {
+    font-size: 2em;
+    font-weight: bold;
+    color: #28a745;
+    margin: 10px 0;
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+}
+
+.plan-features li {
+    padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.plan-features li:before {
+    content: "✓ ";
+    color: #28a745;
+    font-weight: bold;
+}
+
+/* Admin section styles */
+.admin-section {
+    border-top: 1px solid #ccc;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.admin-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.admin-controls div {
+    flex: 1;
+    margin-bottom: 10px;
+}
+
+.admin-controls label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.admin-controls input[type="text"],
+.admin-controls input[type="number"],
+.admin-controls select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.admin-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.admin-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.admin-button.grant {
+    background-color: #28a745;
+    color: white;
+}
+
+.admin-button.revoke {
+    background-color: #dc3545;
+    color: white;
+}
+
+.admin-button.check {
+    background-color: #ffc107;
+    color: white;
+}
+
+#admin-message {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    display: none;
+}
