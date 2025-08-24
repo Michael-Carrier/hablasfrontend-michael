@@ -107,10 +107,18 @@ function handleAuthSuccess(response) {
     // Handle subscription status
     if (response.subscription_status) {
         userSubscriptionStatus = response.subscription_status;
+        if (response.subscription_end_date) {
+            userSubscriptionEndDate = new Date(response.subscription_end_date);
+            localStorage.setItem('userSubscriptionEndDate', userSubscriptionEndDate.toISOString());
+        } else {
+            userSubscriptionEndDate = null;
+            localStorage.removeItem('userSubscriptionEndDate');
+        }
         console.log("Received subscription status:", userSubscriptionStatus);
         console.log("Setting userSubscriptionStatus to:", userSubscriptionStatus);
     } else {
         userSubscriptionStatus = 'none';
+        localStorage.removeItem('userSubscriptionEndDate');
         console.log("No subscription status in response, defaulting to 'none'");
     }
     
@@ -162,9 +170,17 @@ function handleTokenVerification(response) {
         // Handle subscription status on token verification
         if (response.subscription_status) {
             userSubscriptionStatus = response.subscription_status;
+            if (response.subscription_end_date) {
+                userSubscriptionEndDate = new Date(response.subscription_end_date);
+                localStorage.setItem('userSubscriptionEndDate', userSubscriptionEndDate.toISOString());
+            } else {
+                userSubscriptionEndDate = null;
+                localStorage.removeItem('userSubscriptionEndDate');
+            }
             console.log("Token verification - subscription status:", userSubscriptionStatus);
         } else {
             userSubscriptionStatus = 'none';
+            localStorage.removeItem('userSubscriptionEndDate');
             console.log("Token verification - no subscription status, defaulting to 'none'");
         }
         
@@ -196,9 +212,11 @@ function handleInvalidToken() {
     console.log('Token verification failed');
     localStorage.removeItem('token');
     localStorage.removeItem('username');
+    localStorage.removeItem('userSubscriptionEndDate');
     isLoggedIn = false;
     userInfo = { username: '', points: 0, preferredLanguage: 'en' };
     userSubscriptionStatus = 'none';
+    userSubscriptionEndDate = null;
     specialAccess = null;
     hasSpecialAccess = false;
     updateAuthUI(false);
@@ -292,6 +310,7 @@ function handleLogout() {
     isLoggedIn = false;
     userInfo = { username: '', points: 0, preferredLanguage: 'en' };
     userSubscriptionStatus = 'none';
+    userSubscriptionEndDate = null;
     specialAccess = null;
     hasSpecialAccess = false;
     

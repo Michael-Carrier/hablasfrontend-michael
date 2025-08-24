@@ -5,6 +5,7 @@ let stripe = null;
 let subscriptionElements = null;
 let subscriptionSetupInProgress = false;
 let setupIntentClientSecret = null;
+let userSubscriptionEndDate = null;
 
 // Load Stripe
 function initializeStripe() {
@@ -107,10 +108,24 @@ async function handleSubscriptionResponse(response) {
         } else if (response.subscription_status) {
             // Handle subscription status update
             userSubscriptionStatus = response.subscription_status;
+            if (response.subscription_end_date) {
+                userSubscriptionEndDate = new Date(response.subscription_end_date);
+                localStorage.setItem('userSubscriptionEndDate', userSubscriptionEndDate.toISOString());
+            } else {
+                userSubscriptionEndDate = null;
+                localStorage.removeItem('userSubscriptionEndDate');
+            }
             updateSubscriptionUI();
             
-            if (response.subscription_status === 'canceled') {
-                alert('Subscription has been cancelled. You will have access until the end of your billing period.');
+            if (response.subscription_status === 'canceling') {
+                if (userSubscriptionEndDate) {
+                    const daysLeft = Math.ceil((userSubscriptionEndDate - new Date()) / (1000 * 60 * 60 * 24));
+                    alert(`Subscription successfully cancelled. You still have access for ${Math.max(0, daysLeft)} more days.`);
+                } else {
+                    alert('Subscription has been cancelled. You will have access until the end of your billing period.');
+                }
+            } else if (response.subscription_status === 'canceled') {
+                alert('Subscription has been cancelled.');
             }
         } else if (response.client_secret) {
             // Handle payment intent that needs confirmation (for failed payments, etc.)
@@ -180,6 +195,12 @@ function updateSubscriptionUI() {
         console.error('Missing subscription UI elements');
         return;
     }
+
+    // Make sure we have the latest end date from storage
+    const storedEndDate = localStorage.getItem('userSubscriptionEndDate');
+    if (storedEndDate) {
+        userSubscriptionEndDate = new Date(storedEndDate);
+    }
     
     if (TESTING_MODE) {
         subscriptionSection.style.display = 'block';
@@ -213,7 +234,12 @@ function updateSubscriptionUI() {
             break;
             
         case 'canceling':
-            statusDisplay.textContent = 'Subscription will end at period close';
+            if (userSubscriptionEndDate) {
+                const daysLeft = Math.ceil((userSubscriptionEndDate - new Date()) / (1000 * 60 * 60 * 24));
+                statusDisplay.textContent = `Cancels in ${Math.max(0, daysLeft)} days`;
+            } else {
+                statusDisplay.textContent = 'Subscription will end at period close';
+            }
             statusDisplay.className = 'subscription-status pending';
             manageBtn.textContent = 'Reactivate Subscription';
             manageBtn.className = 'subscription-button subscribe';

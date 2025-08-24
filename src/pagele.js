@@ -169,9 +169,7 @@ function displayChaptersGrid(response) {
     const userPagele = response.user_pagele;
     const currentPageleFilename = response.user_pagele?.current_pagele || pageleFilename;
     
-    // Extract chapters from the pagele_data object
-    // Chapters are stored as chapter1, chapter2, chapter3, etc.
-    const chapterKeys = Object.keys(pagele_data).filter(key => key.startsWith('chapter'));
+    const chapterKeys = Object.keys(pagele_data);
     console.log("Found chapter keys:", chapterKeys);
     
     if (chapterKeys.length === 0) {

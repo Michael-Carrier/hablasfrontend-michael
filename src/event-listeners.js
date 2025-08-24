@@ -317,12 +317,6 @@ function setupEventListeners() {
         });
     }
     
-    // Manage subscription button
-    const manageSubscriptionBtn = document.getElementById('subscription-manage-btn');
-    if (manageSubscriptionBtn) {
-        addTouchAwareListener(manageSubscriptionBtn, startSubscription);
-    }
-    
     // Window event listeners
     window.addEventListener('resize', () => {
         updateUIForDevice();
