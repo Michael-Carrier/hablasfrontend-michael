@@ -4,3 +4,4 @@ setup_env.py
 raw-wiktextract-data.jsonl
 fr-extract.jsonl
 slim_wiki.json
+serverv4_2.py
