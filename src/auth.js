@@ -25,15 +25,60 @@ function showDailyPages() {
     
     console.log('Daily pages displayed, pagele content visible');
     
-    // Only show pagele modal if user is actually logged in and not already visible
-    if (isLoggedIn && pageleModal && sentenceModal && chaptersModal &&
-        pageleModal.style.display !== 'block' && 
-        sentenceModal.style.display !== 'block' && 
-        chaptersModal.style.display !== 'block') {
-        // Add small delay to ensure WebSocket connection is ready
-        setTimeout(() => {
-            requestPageleList();
-        }, 500);
+    // Note: Auto-load is now handled by tryAutoLoadLastSentence() 
+    // which is called after all scripts have loaded
+}
+
+// Try to auto-load the last sentence if available
+// This should be called AFTER all scripts are loaded (from index.html DOMContentLoaded)
+function tryAutoLoadLastSentence() {
+    console.log("tryAutoLoadLastSentence called");
+    
+    if (!isLoggedIn) {
+        console.log("Not logged in, skipping auto-load");
+        return;
+    }
+    
+    const pageleModal = document.getElementById('pagele-modal');
+    const sentenceModal = document.getElementById('sentence-modal');
+    const chaptersModal = document.getElementById('chapters-modal');
+    
+    // Don't auto-load if any modal is already visible
+    if (pageleModal?.style.display === 'block' || 
+        sentenceModal?.style.display === 'block' || 
+        chaptersModal?.style.display === 'block') {
+        console.log("Modal already visible, skipping auto-load");
+        return;
+    }
+    
+    console.log("Checking for auto-load:", {
+        hasLastSentence: !!lastSentenceToLoad, 
+        hasPageleData: !!(lastSentenceToLoad && lastSentenceToLoad.pagele_data)
+    });
+    
+    if (lastSentenceToLoad && lastSentenceToLoad.pagele_data) {
+        // Auto-load last sentence with embedded pagele data
+        console.log("Auto-loading with embedded pagele data:", {
+            book: lastSentenceToLoad.book,
+            chapter: lastSentenceToLoad.chapter,
+            sentence_index: lastSentenceToLoad.sentence_index
+        });
+        
+        // Request pagele list in background so it's available if user navigates back
+        requestPageleList();
+        
+        const autoLoadResponse = {
+            pagele_data: lastSentenceToLoad.pagele_data,
+            chapter: lastSentenceToLoad.chapter,
+            sentence_index: lastSentenceToLoad.sentence_index,
+            user_pagele: {},
+            type: "get_pagele"
+        };
+        displayChaptersGrid(autoLoadResponse);
+        lastSentenceToLoad = null; // Clear after loading
+    } else {
+        console.log("No auto-load data available, requesting pagele list");
+        requestPageleList();
     }
 }
 
@@ -134,6 +179,24 @@ function handleAuthSuccess(response) {
         console.log("No special access in response, resetting to false");
     }
     
+    // Handle last sentence for auto-loading
+    if (response.last_sentence) {
+        lastSentenceToLoad = response.last_sentence;
+        console.log("Last sentence to auto-load:", lastSentenceToLoad);
+        console.log("Has pagele_data:", !!lastSentenceToLoad.pagele_data);
+        
+        // If the last_sentence includes pagele_data, we can auto-load immediately
+        if (lastSentenceToLoad.pagele_data) {
+            console.log("Last sentence includes pagele data, setting up for immediate display");
+            // Store the pagele filename and language for later use
+            pageleFilename = lastSentenceToLoad.book;
+            pagele_language = lastSentenceToLoad.language;
+        }
+    } else {
+        lastSentenceToLoad = null;
+        console.log("No last_sentence in response");
+    }
+    
     console.log("About to call updateAuthUI and updateSubscriptionUI");
     console.log("Current userSubscriptionStatus before UI update:", userSubscriptionStatus);
     
@@ -149,6 +212,11 @@ function handleAuthSuccess(response) {
     
     hideDrawer();
     showDailyPages();
+    
+    // Try auto-load after a short delay to ensure UI is ready
+    setTimeout(() => {
+        tryAutoLoadLastSentence();
+    }, 100);
 }
 
 function handleTokenVerification(response) {

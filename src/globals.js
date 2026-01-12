@@ -46,6 +46,7 @@ let userSubscriptionStatus = 'none';
 let subscriptionUsage = { recording: 0, translation: 0, tts: 0 };
 let specialAccess = null;
 let hasSpecialAccess = false;
+let lastSentenceToLoad = null; // For auto-loading last practiced sentence
 
 // Pagele-specific variables
 let completedIndices = {};

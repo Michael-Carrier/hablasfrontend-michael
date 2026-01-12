@@ -218,6 +218,21 @@ function displayChaptersGrid(response) {
         chaptersGrid.appendChild(chapterCard);
     });
     
+    // Auto-load last sentence if available and matches current book
+    if (lastSentenceToLoad && lastSentenceToLoad.book === currentPageleFilename) {
+        console.log("Auto-loading last sentence:", lastSentenceToLoad);
+        const targetChapterKey = lastSentenceToLoad.chapter; // Already includes 'chapter' prefix
+        const chapterIndex = chapterKeys.indexOf(targetChapterKey);
+        if (chapterIndex !== -1) {
+            const chapterData = pagele_data[targetChapterKey];
+            openSentenceModal(targetChapterKey, chapterIndex, chapterData, lastSentenceToLoad.sentence_index);
+            lastSentenceToLoad = null; // Clear after loading
+            return; // Don't show chapters modal
+        } else {
+            console.warn("Target chapter not found for auto-load:", targetChapterKey);
+        }
+    }
+    
     console.log("Chapters grid populated, showing modal");
     showChaptersModal();
 }
@@ -245,7 +260,7 @@ function hideChaptersModal() {
     showPageleModal();
 }
 
-function openSentenceModal(chapterKey, chapterIndex, chapterData) {
+function openSentenceModal(chapterKey, chapterIndex, chapterData, sentenceIndex = 0) {
     console.log('Opening sentence modal for:', chapterKey, 'with data:', chapterData);
     
     if (!chapterData || !Array.isArray(chapterData)) {
@@ -257,7 +272,7 @@ function openSentenceModal(chapterKey, chapterIndex, chapterData) {
     currentMode = 'pagele';
     
     allSentences = chapterData;
-    currentSentenceIndex = 0;
+    currentSentenceIndex = sentenceIndex;
     currentChapterKey = chapterKey; // Store the current chapter key
     
     // Update chapter title
@@ -325,6 +340,9 @@ function updateSentenceDisplay() {
     }
     
     // Clear previous translation
+    if (typeof handleTranslationEnd === 'function' && translate_down) {
+        handleTranslationEnd();
+    }
     translated_text = "";
     const translationDisplay = document.getElementById('translation-display');
     if (translationDisplay) {
@@ -364,13 +382,8 @@ function showNextSentence() {
         }
         
         // Reset translation state
-        translated_text = "";
-        translate_down = false;
-        
-        const translationBtn = document.getElementById('translation-btn');
-        if (translationBtn) {
-            translationBtn.textContent = 'Translate';
-            translationBtn.style.backgroundColor = '';
+        if (typeof handleTranslationEnd === 'function') {
+            handleTranslationEnd();
         }
         
         // Clear prediction results

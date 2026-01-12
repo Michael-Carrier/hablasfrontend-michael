@@ -73,7 +73,11 @@
         <div id="sentence-modal" class="modal">
             <div class="modal-content">
                 <div class="sentence-info-container">
-                    <button id="translation-btn" class="hold-button">Translate</button>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="translation-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span id="translation-btn" style="font-weight: 600; cursor: default;">Translate</span>
                     <h2 id="chapter-title">Chapter Title</h2>
                     <span id="close-sentence-modal" class="close">&times;</span>
                 </div>

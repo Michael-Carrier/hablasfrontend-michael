@@ -658,7 +658,6 @@ function handleTranslationStart(e) {
     
     if (translationBtn) {
         translationBtn.textContent = 'Translating...';
-        translationBtn.style.backgroundColor = '#2196F3';
     }
     
     // Get current sentence text for translation and store original
@@ -681,10 +680,14 @@ function handleTranslationStart(e) {
 function handleTranslationEnd() {
     translate_down = false;
     const translationBtn = document.getElementById('translation-btn');
+    const translationToggle = document.getElementById('translation-toggle');
+    
+    if (translationToggle) {
+        translationToggle.checked = false;
+    }
     
     if (translationBtn) {
         translationBtn.textContent = 'Translate';
-        translationBtn.style.backgroundColor = '';
     }
     
     // Restore original sentence in pagele mode

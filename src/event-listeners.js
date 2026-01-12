@@ -126,11 +126,11 @@ function setupEventListeners() {
     const prevSentence = document.getElementById('prev-sentence');
     const nextSentence = document.getElementById('next-sentence');
     
-    if (prevSentence) {
+    if (prevSentence && typeof showPreviousSentence !== 'undefined') {
         addTouchAwareListener(prevSentence, showPreviousSentence);
     }
     
-    if (nextSentence) {
+    if (nextSentence && typeof showNextSentence !== 'undefined') {
         addTouchAwareListener(nextSentence, showNextSentence);
     }
     
@@ -180,37 +180,18 @@ function setupEventListeners() {
         });
     }
     
-    // Translation button (hold to translate)
-    const translationBtn = document.getElementById('translation-btn');
-    if (translationBtn) {
-        let translateTimer;
-        let isHolding = false;
-        
-        const startTranslation = () => {
-            isHolding = true;
-            translateTimer = setTimeout(() => {
-                if (isHolding) {
-                    handleTranslationStart();
-                }
-            }, 200); // Short delay to distinguish from tap
-        };
-        
-        const endTranslation = () => {
-            isHolding = false;
-            if (translateTimer) {
-                clearTimeout(translateTimer);
-                translateTimer = null;
-            }
-            if (translate_down) {
+    // Translation toggle
+    const translationToggle = document.getElementById('translation-toggle');
+    if (translationToggle) {
+        translationToggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                handleTranslationStart();
+                // If it couldn't start (e.g. not logged in), uncheck it
+                if (!translate_down) e.target.checked = false;
+            } else {
                 handleTranslationEnd();
             }
-        };
-        
-        translationBtn.addEventListener('mousedown', startTranslation);
-        translationBtn.addEventListener('mouseup', endTranslation);
-        translationBtn.addEventListener('mouseleave', endTranslation);
-        translationBtn.addEventListener('touchstart', startTranslation);
-        translationBtn.addEventListener('touchend', endTranslation);
+        });
     }
     
     // Available pagele button
