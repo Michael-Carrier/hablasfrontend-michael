@@ -37,6 +37,45 @@ function setupEventListeners() {
     const loginButton = document.getElementById('login-button');
     const signupButton = document.getElementById('signup-button');
     const logoutButton = document.getElementById('logout-button');
+
+    // Michael's Progress Report button
+    const progressButton = document.getElementById('progress-report-button');
+    if (progressButton) {
+        console.log("✅ Michael's Progress Button found in HTML!"); // Add this
+        addTouchAwareListener(progressButton, () => {
+            console.log("🚀 PROGRESS BUTTON CLICKED!"); // Add this
+            
+            // Show the modal
+            const modal = document.getElementById('progress-modal');
+            if (modal) {
+                modal.style.display = 'block';
+            } else {
+                console.error("❌ Could not find progress-modal in HTML");
+            }
+
+            // Send the request
+            const request = {
+                task: "get_michael_stats",
+                username: window.currentUserEmail || localStorage.getItem('username')
+            };
+            
+            if (typeof sendSocketMessage === 'function') {
+                sendSocketMessage(request);
+            } else {
+                console.error("❌ sendSocketMessage function not found!");
+            }
+        });
+    } else {
+        console.error("❌ Michael's Progress Button NOT found in HTML");
+    }
+
+    // Michael's Close Progress button
+    const closeProgress = document.getElementById('close-progress');
+    if (closeProgress) {
+        addTouchAwareListener(closeProgress, () => {
+            document.getElementById('progress-modal').style.display = 'none';
+        });
+    }
     
     if (loginButton) {
         addTouchAwareListener(loginButton, handleDrawerLogin);

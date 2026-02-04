@@ -10,8 +10,8 @@ function createWebSocketConnection() {
     }
 
     isConnecting = true;
-    const newSocket = new WebSocket('wss://carriertech.uk:8675');
-    //const newSocket = new WebSocket('ws://localhost:8675');
+    //const newSocket = new WebSocket('wss://carriertech.uk:8675');
+    const newSocket = new WebSocket('ws://localhost:8675');
     
     newSocket.addEventListener('open', (event) => {
         console.log('WebSocket connection established');
@@ -229,4 +229,16 @@ function createBlobAndConnect() {
 // Initialize WebSocket connection
 function initializeWebSocket() {
     socket = createWebSocketConnection();
+}
+
+
+function requestWordStats() {
+    if (window.socket && window.socket.readyState === WebSocket.OPEN) {
+        const statsRequest = {
+            task: "get_word_stats",
+            username: window.currentUserEmail // or wherever you store the username
+        };
+        window.socket.send(JSON.stringify(statsRequest));
+        console.log("[WS] Requesting word stats...");
+    }
 }

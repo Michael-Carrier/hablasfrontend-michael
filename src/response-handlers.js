@@ -1,8 +1,278 @@
 // Response handling functions
+//michael addition begin
+let lastMasteredWords = []; // Global variable to store words for the mini-page
+let currentRatios = null; // Add this at the top of your script
+let A1_DICT_FRONTEND = {};
+let A2_DICT_FRONTEND = {};
+let responseStats = {}; // Make it global!
+let lastCorrectList = [];
+window.responseStats = window.responseStats || {};
+
+
+// 1. Move this to the top of your script so it's globally available
+window.openMiniPage = function(level) {
+    const overlay = document.getElementById('mini-page-overlay');
+    const title = document.getElementById('mini-page-title');
+    const content = document.getElementById('mini-page-content');
+
+    if (!overlay || !title || !content) return;
+
+    title.innerText = `${level} Detailed Progress`;
+    
+    // The Hub Menu
+    content.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 15px; padding: 10px;">
+            <p style="color: #7f8c8d; font-size: 0.9em; text-align: center; margin-bottom: 10px;">
+                Select a focus area to view your masteries.
+            </p>
+            
+            <div onclick="renderSelectionList('${level}', 'vocabulary')" 
+                 style="cursor: pointer; padding: 20px; background: #3498db; color: white; border-radius: 12px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s;">
+                 <div style="font-size: 1.5em; margin-bottom: 5px;">📚</div>
+                 <strong style="font-size: 1.1em;">Vocabulary</strong>
+                 <div style="font-size: 0.8em; opacity: 0.9;">Words and Definitions</div>
+            </div>
+
+            <div onclick="renderSelectionList('${level}', 'structure')" 
+                 style="cursor: pointer; padding: 20px; background: #9b59b6; color: white; border-radius: 12px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s;">
+                 <div style="font-size: 1.5em; margin-bottom: 5px;">🏗️</div>
+                 <strong style="font-size: 1.1em;">Sentence Structure</strong>
+                 <div style="font-size: 0.8em; opacity: 0.9;">Patterns and Grammar</div>
+            </div>
+            
+            <button onclick="closeMiniPage()" style="margin-top: 10px; background: transparent; border: none; color: #95a5a6; cursor: pointer;">
+                Back to Dashboard
+            </button>
+        </div>
+    `;
+
+    overlay.style.display = 'block';
+};
+
+function renderSelectionList(level, type) {
+    const content = document.getElementById('mini-page-content');
+    const title = document.getElementById('mini-page-title');
+    
+    // SAFETY CHECK: If the server hasn't sent data yet, stop the crash
+    if (!currentRatios) {
+        content.innerHTML = `<p style="text-align:center; padding:20px;">Loading your stats... Please wait a moment.</p>`;
+        return;
+    }
+
+    const key = level.toLowerCase();
+    
+    // Double check the level exists in the data
+    if (!currentRatios[key]) {
+        content.innerHTML = `<p>No data found for level ${level}.</p>`;
+        return;
+    }
+
+    const dataSource = (type === 'vocabulary') 
+        ? currentRatios[key].categories 
+        : currentRatios[key].structures;
+
+    // ... rest of your code ...
+
+    title.innerText = `${level} ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+
+    if (dataSource) {
+        let html = `
+            <button onclick="openMiniPage('${level}')" style="margin-bottom: 15px; color: #3498db; background: none; border: none; cursor: pointer; font-weight: bold;">
+                ⬅ Back to Options
+            </button>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+        `;
+
+        const sortedEntries = Object.entries(dataSource).sort();
+
+        for (const [name, counts] of sortedEntries) {
+            const perc = ((counts.current / counts.total) * 100).toFixed(0);
+            
+            // Note: If type is 'structure', we call openStructureDetail instead
+            const clickAction = (type === 'vocabulary') 
+                ? `openCategoryDetail('${level}', '${name}')`
+                : `openStructureDetail('${level}', '${name}')`;
+
+            html += `
+                <div onclick="${clickAction}" style="cursor: pointer; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 0.9em;">
+                        <span>${name}</span>
+                        <span>${counts.current} / ${counts.total}</span>
+                    </div>
+                    <div style="width: 100%; background: #edf2f7; height: 8px; border-radius: 4px; margin-top: 8px; overflow: hidden;">
+                        <div style="width: ${perc}%; background: #2ecc71; height: 100%;"></div>
+                    </div>
+                </div>`;
+        }
+        content.innerHTML = html + '</div>';
+    } else {
+        content.innerHTML = `<p>No ${type} data found.</p><button onclick="openMiniPage('${level}')">Back</button>`;
+    }
+}
+
+window.openStructureDetail = function(level, structureName) {
+    const title = document.getElementById('mini-page-title');
+    const content = document.getElementById('mini-page-content');
+    
+    // 1. Change title to show we are looking at patterns
+    title.innerHTML = `🏗️ Patterns: ${structureName}`;
+
+    // 2. Find the sentences Michael has stored for this pattern
+    // We assume the backend sends these in: window.responseStats[structureName].sentences
+    const structureData = window.responseStats ? window.responseStats[structureName] : null;
+    const sentences = (structureData && structureData.sentences) ? structureData.sentences : [];
+
+    let html = `
+        <button onclick="renderSelectionList('${level}', 'structure')" style="margin-bottom:15px; color:#3498db; background:none; border:none; cursor:pointer;">
+            ⬅ Back to Structures
+        </button>
+        <div style="background:#f8f9fa; padding:15px; border-radius:10px; border-left:4px solid #9b59b6;">
+            <p style="font-size:0.85em; color:#7f8c8d; margin-bottom:10px;">Sentences you used correctly:</p>
+    `;
+
+    if (sentences.length > 0) {
+        sentences.forEach(s => {
+            html += `
+                <div style="background:white; padding:10px; border-radius:8px; margin-bottom:8px; box-shadow:0 2px 4px rgba(0,0,0,0.05); font-size:0.95em;">
+                    💬 "${s}"
+                </div>`;
+        });
+    } else {
+        html += `<p style="text-align:center; color:#bdc3c7; padding:20px;">No sentences recorded yet. Try using this pattern with Michael!</p>`;
+    }
+
+    content.innerHTML = html + `</div>`;
+};
+
+
+window.closeMiniPage = function() {
+    document.getElementById('mini-page-overlay').style.display = 'none';
+};
+
+function handlePredSentence(response) {
+    const predHtml = response.pred_sentence || response.predicted_sentence;
+
+    const wrongWords = extractWrongWords(predHtml);   // MUST return array of {expected, pronounced}
+    const correctWords = extractCorrectWords(predHtml); // array of strings
+
+    console.log("✅ Correct:", correctWords);
+    console.log("❌ Incorrect:", wrongWords);
+
+    window.pronunciationBank = window.pronunciationBank || [];
+    window.pronunciationBank.push({
+        timestamp: Date.now(),
+        correct: correctWords,
+        incorrect: wrongWords
+    });
+}
+
+
+function normalizeWord(word) {
+    return word.toLowerCase().replace(/[.,!?;:]/g, "").trim();
+}
+
+function extractCorrectWords(predSentenceHtml) {
+    const temp = document.createElement("div");
+    temp.innerHTML = predSentenceHtml;
+    temp.querySelectorAll(".wrong").forEach(el => el.remove());
+    return temp.textContent
+        .trim()
+        .split(/\s+/)
+        .map(normalizeWord)
+        .filter(Boolean);
+}
+
+
+function exportPronunciationCSV() {
+    if (!window.pronunciationBank || !window.pronunciationBank.length) {
+        console.warn("No data to export");
+        return;
+    }
+
+    const rows = ["timestamp,type,expected,pronounced"];
+    
+    window.pronunciationBank.forEach(entry => {
+        // Correct words: expected = pronounced
+        entry.correct.forEach(w => rows.push(`${entry.timestamp},correct,${w},${w}`));
+        // Incorrect words: store both
+        entry.incorrect.forEach(obj => rows.push(`${entry.timestamp},incorrect,${obj.expected},${obj.pronounced}`));
+    });
+
+    const blob = new Blob([rows.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "pronunciation_test.csv";
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+
+
+// normalize words: lowercase + remove punctuation
+function normalizeWord(word) {
+    return word.toLowerCase().replace(/[.,!?;:]/g, "").trim();
+}
+
+// extract correct words from pred_sentence HTML
+function extractCorrectWords(predSentenceHtml) {
+    const temp = document.createElement("div");
+    temp.innerHTML = predSentenceHtml;
+    temp.querySelectorAll(".wrong").forEach(el => el.remove());
+    return temp.textContent
+        .trim()
+        .split(/\s+/)
+        .map(normalizeWord)
+        .filter(Boolean);
+}
+
+// extract incorrect words from pred_sentence HTML
+function extractWrongWords(predSentenceHtml) {
+    const temp = document.createElement("div");
+    temp.innerHTML = predSentenceHtml;
+
+    return Array.from(temp.querySelectorAll(".wrong")).map(el => ({
+        expected: el.getAttribute('id') || '[UNKNOWN]',
+        pronounced: el.textContent
+    }));
+}
+
+// export the banked data to CSV
+function exportPronunciationCSV() {
+    if (!window.pronunciationBank || !window.pronunciationBank.length) {
+        console.warn("No data to export");
+        return;
+    }
+
+    const rows = ["timestamp,type,expected,pronounced"];
+
+    window.pronunciationBank.forEach(entry => {
+        // correct words
+        entry.correct.forEach(w => rows.push(`${entry.timestamp},correct,${w},${w}`));
+        // incorrect words
+        entry.incorrect.forEach(obj => {
+            rows.push(`${entry.timestamp},incorrect,${obj.expected},${obj.pronounced}`);
+        });
+    });
+
+    const blob = new Blob([rows.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "pronunciation_test.csv";
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+
+
+//michael addition end
 
 function handleResponse(response) {
-    console.log("Handling response:", response);
-    
+    //alert("RAW RESPONSE: " + JSON.stringify(response)); // temporary alert to freeze the screen
+    console.log("Handling response:", response);    
     // Handle authentication responses - check for either success format
     if ((response.success && (response.username || response.token)) ||
         (response.status === 'success' && (response.username || response.token)) ||
@@ -176,24 +446,102 @@ function handleResponse(response) {
         updatePointsDisplay(response.points);
         return;
     }
+
+    // --- MICHAEL'S PROGRESS REPORT HANDLER ---
+    // Look for the task OR the specific stats key
+if (response.task === "michael_stats_response") {
+        // --- DATA SAVING ---
+        currentRatios = response.ratios;
+        lastCorrectList = response.correct_list || [];
+        window.responseStats = response.stats || {}; 
+
+        window.A1_DICT_FRONTEND = response.a1_full_dict || {};
+        window.A2_DICT_FRONTEND = response.a2_full_dict || {};
+
+        // --- THE FIX: DEFINE THE ELEMENTS AT THE START ---
+        const accuracyEl = document.getElementById('overall-accuracy');
+        const cefrEl = document.getElementById('cefr-level'); 
+        const trickyListEl = document.getElementById('tricky-words-list');
+
+        // 1. Update Ratios (Targeting separate boxes so they both show)
+        if (response.ratios) {
+            const a1 = response.ratios.a1;
+            const a1Perc = ((a1.current / a1.total) * 100).toFixed(1);
+            if (accuracyEl) {
+                accuracyEl.innerHTML = `📘 <strong>A1 Progress:</strong> ${a1.current}/${a1.total} <span style="color:#27ae60">(${a1Perc}%)</span>`;
+            }
+
+            const a2 = response.ratios.a2;
+            const a2Perc = ((a2.current / a2.total) * 100).toFixed(1);
+            if (cefrEl) {
+                cefrEl.innerHTML = `📙 <strong>A2 Progress:</strong> ${a2.current}/${a2.total} <span style="color:#27ae60">(${a2Perc}%)</span>`;
+            }
+        }
+
+        // 2. The Tricky & Mastered Lists
+        if (trickyListEl) {
+            trickyListEl.innerHTML = ""; 
+            const statsEntries = Object.entries(response.stats || {});
+            
+            // Section: Needs Practice
+            const tricky = statsEntries
+                .filter(e => e[1].incorrect > 0)
+                .sort((a, b) => b[1].incorrect - a[1].incorrect)
+                .slice(0, 5);
+
+            if (tricky.length > 0) {
+                trickyListEl.innerHTML += "<h4 style='margin:10px 0 5px 0; color:#e74c3c;'>Focus on these:</h4>";
+                tricky.forEach(([word, counts]) => {
+                    const li = document.createElement('li');
+                    li.style.padding = "3px 0";
+                    li.innerHTML = `<strong>${word}</strong>: ${counts.incorrect} ❌ | ${counts.correct} ✅`;
+                    trickyListEl.appendChild(li);
+                });
+            }
+
+            // Section: Words Covered (Your naming convention)
+            const covered = response.correct_list || [];
+            if (covered.length > 0) {
+                trickyListEl.innerHTML += "<hr><h4 style='margin:10px 0 5px 0; color:#2ecc71;'>Words Mastered:</h4>";
+                const p = document.createElement('p');
+                p.style.fontSize = "0.85em";
+                p.style.lineHeight = "1.6";
+                p.style.color = "#34495e";
+                p.innerText = covered.join(" • "); 
+                trickyListEl.appendChild(p);
+            } else if (statsEntries.length === 0) {
+                trickyListEl.innerHTML = "<li>Start speaking to see your progress!</li>";
+            }
+        }
+        return; 
+    }
+        
+function closeMiniPage() {
+    document.getElementById('mini-page-overlay').style.display = 'none';
+}
+
+function closeMichaelProgress() {
+    document.getElementById('progress-modal').style.display = 'none';
+    document.getElementById('drawer-backdrop').style.display = 'none'; // Closes backdrop too
+}
     
     // Handle error responses
     if (response.error) {
         console.error('Server error:', response.error);
         
-        // Don't show alerts for logout-related errors (backend might not support logout task)
-        if (response.error === 'Invalid task' && response._originalTask === 'logout') {
-            console.log('Logout task not supported by backend - this is OK, logout completed on frontend');
-            return;
-        }
-        
-        if (response.error.includes('subscription') || response.error.includes('limit')) {
-            showUpgradePrompt(response.error);
-        } else {
-            alert('Error: ' + response.error);
-        }
+    // Don't show alerts for logout-related errors (backend might not support logout task)
+    if (response.error === 'Invalid task' && response._originalTask === 'logout') {
+        console.log('Logout task not supported by backend - this is OK, logout completed on frontend');
         return;
     }
+        
+    if (response.error.includes('subscription') || response.error.includes('limit')) {
+        showUpgradePrompt(response.error);
+    } else {
+        alert('Error: ' + response.error);
+    }
+    return;
+}
     
     // Handle subscription status responses
     if (response.subscription_status) {
@@ -205,6 +553,7 @@ function handleResponse(response) {
     
     // Default case for unhandled responses
     console.log("Unhandled response from server:", response);
+
 }
 
 function handleTokenResponse(response) {
@@ -299,3 +648,168 @@ function initializeResponseHandlers() {
         });
     });
 }
+
+function displayWordStats(stats) {
+    // 1. Sort words to find the ones with the most 'incorrect' counts
+    const sortedWords = Object.entries(stats)
+        .filter(([word, data]) => data.incorrect > 0)
+        .sort((a, b) => b[1].incorrect - a[1].incorrect)
+        .slice(0, 5); // Just take the top 5
+
+    if (sortedWords.length === 0) return;
+
+    // 2. Create a small notification or update a <div> on your page
+    console.log("📊 Michael's Top 5 Difficult Words:", sortedWords);
+    
+    // Example: If you have a div with id="stats-container"
+    const container = document.getElementById('stats-container');
+    if (container) {
+        container.innerHTML = '<h3>Needs Practice:</h3>' + 
+            sortedWords.map(([word, data]) => `
+                <div class="stat-item">
+                    <strong>${word}</strong>: missed ${data.incorrect} times
+                </div>
+            `).join('');
+    }
+}
+
+
+function closeMiniPage() {
+    document.getElementById('mini-page-overlay').style.display = 'none';
+}
+
+function showMistakeSummary(response) {
+    // This looks at the response we got back from the STT task
+    if (response.wrong_words && response.wrong_words.length > 0) {
+        let summaryHtml = "<div class='mistake-report'><h3>Words to Practice:</h3><ul>";
+        
+        response.wrong_words.forEach(w => {
+            summaryHtml += `<li><strong>${w.expected}</strong> (You said: "${w.pronounced}")</li>`;
+        });
+        
+        summaryHtml += "</ul></div>";
+        
+        // Push this to your UI (replace 'status-box' with your actual div ID)
+        const statusBox = document.getElementById('status-box');
+        if (statusBox) statusBox.innerHTML += summaryHtml;
+    }
+}
+
+
+window.openCategoryDetail = function(level, category) {
+    const title = document.getElementById('mini-page-title');
+    const content = document.getElementById('mini-page-content');
+    
+    const masterDict = (level === 'A1') ? window.A1_DICT_FRONTEND : window.A2_DICT_FRONTEND;
+    
+    console.log(`[DEBUG] Level: ${level}, Category: ${category}`);
+    // responseStats is what you saved in the michael_stats_response handler
+    console.log("[DEBUG] Stats for this category:", window.responseStats);
+
+    title.innerHTML = `
+        <span onclick="openMiniPage('${level}')" style="cursor:pointer; color:#3498db; font-size: 0.85em;">⬅ ${level}</span> 
+        <span style="font-size: 0.9em; margin-left:5px;">/ ${category}</span>`;
+    
+    if (!masterDict || Object.keys(masterDict).length === 0) {
+        content.innerHTML = `<p style="text-align:center; padding:20px;">Waiting for word data from server...</p>`;
+        return;
+    }
+
+    const categoryWords = Object.entries(masterDict)
+        .filter(([word, cat]) => cat === category)
+        .sort((a, b) => a[0].localeCompare(b[0]));
+
+    if (categoryWords.length === 0) {
+        content.innerHTML = `<p style="text-align:center; color:#95a5a6; padding:20px;">No words found for "${category}".</p>`;
+        return;
+    }
+
+    // We keep the 1fr 1fr grid
+    let wordHtml = `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-height: 400px; overflow-y: auto; padding: 10px; background: #fdfdfd; border-radius: 8px; border: 1px solid #eee;">`;
+
+categoryWords.forEach(([word, cat], index) => {
+        const isMastered = lastCorrectList.includes(word);
+        const wordData = window.responseStats[word] || {};
+        const sentences = wordData.sentences || [];
+        const hasSentences = sentences.length > 0;
+
+        // Use 'display: contents' so the children are direct members of the grid
+        wordHtml += `
+            <div style="display: contents;">
+                <div onclick="${hasSentences ? `toggleSentences('sent-${index}')` : ''}" 
+                    style="
+                        padding: 10px; 
+                        border-radius: 8px; 
+                        background: ${isMastered ? '#e8f5e9' : '#ffffff'}; 
+                        color: ${isMastered ? '#2e7d32' : '#7f8c8d'};
+                        border: 1px solid ${isMastered ? '#c8e6c9' : '#ececec'};
+                        font-size: 0.85em;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        /* THIS IS THE FIX: */
+                        cursor: ${hasSentences ? 'pointer' : 'default'}; 
+                        user-select: none;
+                        transition: background 0.2s;
+                    "
+                    ${hasSentences ? `onmouseover="this.style.background='#f0f0f0'"` : ''}
+                    ${hasSentences ? `onmouseout="this.style.background='${isMastered ? '#e8f5e9' : '#ffffff'}'"` : ''}
+                >
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span>${isMastered ? '✅' : '⚪'}</span>
+                        <span style="${isMastered ? 'font-weight: 600;' : ''}">${word}</span>
+                    </div>
+                    ${hasSentences ? `<span style="font-size: 0.7em; color: #3498db; filter: grayscale(${isMastered ? 0 : 1});">💬</span>` : ''}
+                </div>
+                
+                <div id="sent-${index}" style="
+                    display: none; 
+                    grid-column: span 2; 
+                    padding: 12px; 
+                    background: #fdfdfd; 
+                    border: 1px dashed #dcdcdc; 
+                    border-radius: 8px; 
+                    font-size: 0.8em; 
+                    color: #444; 
+                    margin: 2px 5px 10px 5px;
+                ">
+                    <div style="font-weight: bold; margin-bottom: 8px; color: #7f8c8d; font-size: 0.7em; letter-spacing: 0.5px;">RECORDED EXAMPLES:</div>
+                    ${sentences.map(s => `
+                        <div style="margin-bottom:8px; line-height:1.4; padding-left: 10px; border-left: 2px solid #3498db;">
+                            "${s}"
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+    });    
+
+    wordHtml += `</div>`;
+    
+    wordHtml += `
+        <button onclick="openMiniPage('${level}')" style="margin-top:15px; width:100%; padding:8px; border:none; background:#f0f2f5; border-radius:6px; cursor:pointer; color:#65676b; font-size:0.9em;">
+            Back to Categories
+        </button>`;
+
+    content.innerHTML = wordHtml;
+};
+
+window.toggleSentences = function(id) {
+    console.log("Toggling visibility for:", id);
+    const el = document.getElementById(id);
+    if (el) {
+        if (el.style.display === 'none' || el.style.display === '') {
+            el.style.display = 'block';
+        } else {
+            el.style.display = 'none';
+        }
+    } else {
+        console.error("Could not find element with ID:", id);
+    }
+};
+
+window.toggleSentences = function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+    }
+};
