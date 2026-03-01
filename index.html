@@ -120,7 +120,9 @@
                 <div id="logout-button" class="options">Logout</div><!-- michael addition -->
                 
             </div>
+            <div id="review-button" class="options" onclick="openReviewModal()">Review</div>
             <div id="progress-report-button" class="options" onclick="openMichaelProgress()">Progress Report</div>
+            <div id="recommend-button" class="options" onclick="openRecommendModal()">⭐ We Recommend</div>
             <div id="available-pagele" class="options">Available Books</div>
             <div class="language-section">
                 <h3>Native Language</h3>
@@ -450,6 +452,37 @@
         </div>
     </div>
 
+
+<div id="recommend-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeRecommendModal()">&times;</span>
+        <h2 style="text-align: center;">⭐ We Recommend</h2>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin: 20px 0;">
+            <div class="options" onclick="requestNewWord()">📚 Try a New Word</div>
+            <div class="options" onclick="requestWeakStructure()">🏗️ Practice a Sentence Structure</div>
+        </div>
+        <div id="recommend-display-area" style="background: #f9f9f9; padding: 20px; border-radius: 12px; min-height: 100px; display: flex; align-items: center; justify-content: center; text-align: center; border: 1px solid #ddd;">
+            <p style="color: #666;">Select an option to get a recommendation</p>
+        </div>
+    </div>
+</div>
+
+<div id="review-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeReviewModal()">&times;</span>
+        
+        <h2 style="text-align: center;">Review Sessions</h2>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px; margin: 20px 0;">
+            <div class="options" onclick="startA1Review()">A1 Pattern Review</div>
+            <div class="options" onclick="startGeneralReview()">General Review</div>
+        </div>
+
+        <div id="review-display-area" style="background: #f9f9f9; padding: 20px; border-radius: 12px; min-height: 100px; display: flex; align-items: center; justify-content: center; text-align: center; border: 1px solid #ddd;">
+            <p style="color: #666;">Select a review type to begin</p>
+        </div>
+    </div>
+</div>
 
     <!-- Modular JavaScript Files -->
     <script src="src/globals.js"></script>

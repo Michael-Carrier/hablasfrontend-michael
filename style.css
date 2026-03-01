@@ -2663,3 +2663,41 @@ input:checked + .slider:before {
     max-height: 300px;
     overflow-y: auto;
 }
+
+/* Apply Sentence Modal styles to the Review Modal */
+#review-modal .modal-content {
+    /* Copy the styles from #sentence-modal .modal-content */
+    background: var(--gradient-primary);
+    border-radius: 24px;
+    padding: 30px;
+    height: 90vh;
+    width: 95vw;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    border: 1px solid var(--border-light);
+}
+
+#review-sentence-container {
+    /* Mirror #sentence-container */
+    background: var(--gradient-secondary);
+    border-radius: 16px;
+    padding: 5%;
+    margin: 5%;
+    min-height: 100px;
+    display: flex;
+    position: relative; /* For the processing overlay */
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 1.3em;
+    line-height: 1.6;
+    color: var(--text-primary);
+    border: 2px solid var(--border-light);
+    flex-grow: 1;
+}
+
+#review-sentence-container:hover {
+    border-color: var(--accent-primary);
+}

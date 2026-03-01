@@ -49,6 +49,51 @@ window.openMiniPage = function(level) {
     overlay.style.display = 'block';
 };
 
+function highlightVocabWord(sentence, targetWord) {
+    const fakeHighlights = {
+        special: [targetWord]  // 'special' = blue bold, fits well for a target word
+    };
+    return window.renderHighlightedSentence(sentence, fakeHighlights);
+}
+
+
+window.renderHighlightedSentence = function(sentence, highlightsJson) {
+    if (!highlightsJson) return sentence;
+    
+    let hl = {};
+    try {
+        // Handle cases where it's already an object or still a string
+        hl = typeof highlightsJson === 'string' ? JSON.parse(highlightsJson) : highlightsJson;
+    } catch(e) { return sentence; }
+
+    let words = sentence.split(' ');
+
+    return words.map(word => {
+        // Clean word for comparison (remove punctuation)
+        let clean = word.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+
+        // Apply colors based on your preferences:
+        // Numbers = Yellow background
+        if (hl.numbers && hl.numbers.some(n => n.toLowerCase() === clean)) {
+            return `<span style="background: #f1c40f; border-radius: 3px; padding: 0 2px;">${word}</span>`;
+        }
+        // Verbs = Orange text
+        if (hl.verbs && hl.verbs.some(v => v.toLowerCase() === clean)) {
+            return `<span style="color: #e67e22; font-weight: bold;">${word}</span>`;
+        }
+        // Special/Keywords (can, could, would, etc.) = Blue text
+        if (hl.special && hl.special.some(s => s.toLowerCase() === clean)) {
+            return `<span style="color: #3498db; font-weight: bold;">${word}</span>`;
+        }
+        // Nouns = Green text
+        if (hl.nouns && hl.nouns.some(n => n.toLowerCase() === clean)) {
+            return `<span style="color: #27ae60; font-weight: bold;">${word}</span>`;
+        }
+
+        return word;
+    }).join(' ');
+};
+
 function renderSelectionList(level, type) {
     const content = document.getElementById('mini-page-content');
     const title = document.getElementById('mini-page-title');
@@ -110,16 +155,70 @@ function renderSelectionList(level, type) {
     }
 }
 
+function openReviewModal() {
+    // Hide the drawer first
+    document.getElementById("settings-drawer").classList.remove("open");
+    
+    // Show the modal
+    const modal = document.getElementById("review-modal");
+    modal.style.display = "block";
+}
+
+function closeReviewModal() {
+    document.getElementById("review-modal").style.display = "none";
+}
+
+// Add this to the top of your review functions
+async function startA1Review() {
+    const lang = window.userInfo?.preferred_language || localStorage.getItem('preferred_language') || 'en';
+    pageleFilename = `a1-${lang}-review.json`;
+    window.isReviewMode = true;
+    console.log("[REVIEW] startA1Review called");
+    console.log("[REVIEW] pageleFilename set to:", pageleFilename);
+    console.log("[REVIEW] isReviewMode set to:", window.isReviewMode);
+    closeReviewModal();
+    sendSocketMessage({
+        task: "init_pagele",
+        token: localStorage.getItem('token'),
+        pagele_filename: pageleFilename,
+        language: "review"
+    });
+}
+
+async function startGeneralReview() {
+    const lang = window.userInfo?.preferred_language || localStorage.getItem('preferred_language') || 'en';
+    pageleFilename = `general-${lang}-review.json`;
+    window.isReviewMode = true;  // add this
+    closeReviewModal();
+    sendSocketMessage({
+        task: "init_pagele",
+        token: localStorage.getItem('token'),
+        pagele_filename: pageleFilename,
+        language: "review"
+    });
+}
+
+// Optional: Close modal if user clicks outside of the box
+window.onclick = function(event) {
+    const reviewModal = document.getElementById("review-modal");
+    const progressModal = document.getElementById("michael-progress-modal"); // or whatever your name is
+    
+    if (event.target == reviewModal) {
+        reviewModal.style.display = "none";
+    }
+}
+
 window.openStructureDetail = function(level, structureName) {
     const title = document.getElementById('mini-page-title');
     const content = document.getElementById('mini-page-content');
-    
-    // 1. Change title to show we are looking at patterns
+    const key = level.toLowerCase();
+
     title.innerHTML = `🏗️ Patterns: ${structureName}`;
 
-    // 2. Find the sentences Michael has stored for this pattern
-    // We assume the backend sends these in: window.responseStats[structureName].sentences
-    const structureData = window.responseStats ? window.responseStats[structureName] : null;
+    const levelData = currentRatios[key];
+    const structureData = (levelData && levelData.structures) ? levelData.structures[structureName] : null;
+    
+    // structureData.sentences is now a list of OBJECTS: {text: "...", highlights: "{...}"}
     const sentences = (structureData && structureData.sentences) ? structureData.sentences : [];
 
     let html = `
@@ -132,18 +231,21 @@ window.openStructureDetail = function(level, structureName) {
 
     if (sentences.length > 0) {
         sentences.forEach(s => {
+            // Check if s is an object (new version) or just a string (old version)
+            const text = typeof s === 'object' ? s.text : s;
+            const highlights = typeof s === 'object' ? s.highlights : null;
+
             html += `
-                <div style="background:white; padding:10px; border-radius:8px; margin-bottom:8px; box-shadow:0 2px 4px rgba(0,0,0,0.05); font-size:0.95em;">
-                    💬 "${s}"
+                <div style="background:white; padding:12px; border-radius:8px; margin-bottom:10px; box-shadow:0 2px 4px rgba(0,0,0,0.05); font-size:1em; line-height:1.4;">
+                    ${window.renderHighlightedSentence(text, highlights)}
                 </div>`;
         });
     } else {
-        html += `<p style="text-align:center; color:#bdc3c7; padding:20px;">No sentences recorded yet. Try using this pattern with Michael!</p>`;
+        html += `<p style="text-align:center; color:#bdc3c7; padding:20px;">No sentences recorded yet!</p>`;
     }
 
     content.innerHTML = html + `</div>`;
 };
-
 
 window.closeMiniPage = function() {
     document.getElementById('mini-page-overlay').style.display = 'none';
@@ -302,6 +404,60 @@ function handleResponse(response) {
         return;
     }
     
+    // Add this inside the handleResponse function
+    if (response.type === "review_content") {
+        const displayArea = document.getElementById("review-display-area");
+        if (displayArea) {
+            if (response.status === "success") {
+                // Success! Display the sentence Michael mastered
+                displayArea.innerHTML = `
+                    <div class="review-text-container">
+                        <p style="font-size: 1.3rem; line-height: 1.5; color: var(--text-primary); margin-bottom: 15px;">
+                            ${response.sentence}
+                        </p>
+                        <div class="review-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.8rem; color: var(--accent-primary); font-weight: bold;">
+                                Pattern Mastered
+                            </span>
+                            <button onclick="playReviewTTS('${response.sentence.replace(/'/g, "\\'")}')" 
+                                    class="options" 
+                                    style="padding: 5px 15px; margin: 0; font-size: 0.9rem;">
+                                🔊 Hear Sentence
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Handle the case where no sentences are found
+                displayArea.innerHTML = `<p style="color: #e74c3c;">${response.message}</p>`;
+            }
+        }
+        return; 
+    }
+
+    if (response.type === "recommend_content") {
+        if (response.status === "success") {
+            closeRecommendModal();
+            
+            // Load directly into pagele sentence modal
+            allSentences = [{"text": response.sentence, "highlights": response.highlights}];
+            currentSentenceIndex = 0;
+            pageleFilename = "recommend";
+            
+            const chapterTitle = document.getElementById('chapter-title');
+            if (chapterTitle) chapterTitle.textContent = response.label || "We Recommend";
+            
+            updateSentenceDisplay();
+            
+            const sentenceModal = document.getElementById('sentence-modal');
+            if (sentenceModal) sentenceModal.style.display = 'flex';
+        } else {
+            const displayArea = document.getElementById("recommend-display-area");
+            if (displayArea) displayArea.innerHTML = `<p style="color: #e74c3c;">${response.message}</p>`;
+        }
+        return;
+    }
+
     // Handle token verification
     if (response.hasOwnProperty('success') && response.hasOwnProperty('user_data')) {
         handleTokenVerification(response);
@@ -483,20 +639,22 @@ if (response.task === "michael_stats_response") {
             trickyListEl.innerHTML = ""; 
             const statsEntries = Object.entries(response.stats || {});
             
-            // Section: Needs Practice
-            const tricky = statsEntries
-                .filter(e => e[1].incorrect > 0)
-                .sort((a, b) => b[1].incorrect - a[1].incorrect)
-                .slice(0, 5);
+            // Section: Needs Practice - NOW USES needs_review FLAG
+            const needsReview = statsEntries
+                .filter(([word, data]) => data.needs_review === true)
+                .sort((a, b) => (b[1].last_seen || "").localeCompare(a[1].last_seen || ""))
+                .slice(0, 10);
 
-            if (tricky.length > 0) {
+            if (needsReview.length > 0) {
                 trickyListEl.innerHTML += "<h4 style='margin:10px 0 5px 0; color:#e74c3c;'>Focus on these:</h4>";
-                tricky.forEach(([word, counts]) => {
+                needsReview.forEach(([word, counts]) => {
                     const li = document.createElement('li');
                     li.style.padding = "3px 0";
                     li.innerHTML = `<strong>${word}</strong>: ${counts.incorrect} ❌ | ${counts.correct} ✅`;
                     trickyListEl.appendChild(li);
                 });
+            } else if (statsEntries.length > 0) {
+                trickyListEl.innerHTML += "<h4 style='margin:10px 0 5px 0; color:#2ecc71;'>No words need review!</h4>";
             }
 
             // Section: Words Covered (Your naming convention)
@@ -513,7 +671,7 @@ if (response.task === "michael_stats_response") {
                 trickyListEl.innerHTML = "<li>Start speaking to see your progress!</li>";
             }
         }
-        return; 
+        return;        
     }
         
 function closeMiniPage() {
@@ -554,6 +712,35 @@ function closeMichaelProgress() {
     // Default case for unhandled responses
     console.log("Unhandled response from server:", response);
 
+}
+
+function openRecommendModal() {
+    document.getElementById("settings-drawer").classList.remove("open");
+    document.getElementById("recommend-modal").style.display = "block";
+}
+
+function closeRecommendModal() {
+    document.getElementById("recommend-modal").style.display = "none";
+}
+
+function requestNewWord() {
+    const user = (window.userInfo && window.userInfo.username) || localStorage.getItem('username');
+    document.getElementById("recommend-display-area").innerHTML = `<p style="color: #666;">Finding a new word...</p>`;
+    sendSocketMessage({
+        task: "get_new_word",
+        username: user,
+        token: localStorage.getItem('token')
+    });
+}
+
+function requestWeakStructure() {
+    const user = (window.userInfo && window.userInfo.username) || localStorage.getItem('username');
+    document.getElementById("recommend-display-area").innerHTML = `<p style="color: #666;">Finding your weakest structure...</p>`;
+    sendSocketMessage({
+        task: "get_weak_structure",
+        username: user,
+        token: localStorage.getItem('token')
+    });
 }
 
 function handleTokenResponse(response) {
@@ -776,7 +963,7 @@ categoryWords.forEach(([word, cat], index) => {
                     <div style="font-weight: bold; margin-bottom: 8px; color: #7f8c8d; font-size: 0.7em; letter-spacing: 0.5px;">RECORDED EXAMPLES:</div>
                     ${sentences.map(s => `
                         <div style="margin-bottom:8px; line-height:1.4; padding-left: 10px; border-left: 2px solid #3498db;">
-                            "${s}"
+                            "${highlightVocabWord(s, word)}"
                         </div>
                     `).join('')}
                 </div>
@@ -813,3 +1000,30 @@ window.toggleSentences = function(id) {
         el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
     }
 };
+
+function playReviewTTS(text) {
+    console.log("Playing TTS for review sentence...");
+    if (typeof sendSocketMessage === "function") {
+        sendSocketMessage({
+            task: "tts",
+            text: text,
+            language: window.language || 'en'
+        });
+    } else {
+        console.error("sendSocketMessage not found for TTS");
+    }
+}
+
+window.playReviewTTS = function(text) {
+    console.log("TTS Request for:", text);
+    if (typeof sendSocketMessage === "function") {
+        sendSocketMessage({
+            task: "tts",
+            text: text,
+            language: window.language || 'en'
+        });
+    }
+};
+
+
+
