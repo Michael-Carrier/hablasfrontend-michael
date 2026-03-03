@@ -23,8 +23,7 @@ function displayPageleList(pageleBooks) {
         showPageleModal();
         return;
     }
-    //review section
-    pageleBooks = pageleBooks.filter(b => !b.filename.includes('-review.json'));
+    
     // Group books by language
     const booksByLanguage = {};
     pageleBooks.forEach(book => {
@@ -149,30 +148,6 @@ function selectPagele(filename, lang, index) {
 
 function displayChaptersGrid(response) {
     console.log("Displaying chapters grid:", response);
-
-    if (!response.pagele_data) {
-        console.error("No pagele_data in response");
-        chaptersGrid.innerHTML = '<p>No chapters available</p>';
-        showChaptersModal();
-        return;
-    }
-
-    pagele_data = response.pagele_data;
-
-    console.log("[REVIEW] displayChaptersGrid called");
-    console.log("[REVIEW] window.isReviewMode:", window.isReviewMode);
-    console.log("[REVIEW] pageleFilename:", pageleFilename);
-    console.log("[REVIEW] response:", response);
-
-    if (window.isReviewMode) {
-        console.log("[REVIEW] Skipping chapter grid, going straight to sentences");
-        window.isReviewMode = false;
-        const chapterKey = Object.keys(pagele_data)[0];
-        const chapterData = pagele_data[chapterKey];
-        openSentenceModal(chapterKey, 0, chapterData, 0);
-        return;
-    }    
-    
     const chaptersGrid = document.getElementById('chapters-grid');
     if (!chaptersGrid) {
         console.error("chapters-grid element not found");
@@ -181,15 +156,15 @@ function displayChaptersGrid(response) {
     
     chaptersGrid.innerHTML = '';
     
-
-    if (pageleFilename && pageleFilename.includes('-review.json')) {
-        const chapterKey = Object.keys(pagele_data)[0];
-        const chapterData = pagele_data[chapterKey];
-        openSentenceModal(chapterKey, 0, chapterData, 0);
+    if (!response.pagele_data) {
+        console.error("No pagele_data in response");
+        chaptersGrid.innerHTML = '<p>No chapters available</p>';
+        showChaptersModal();
         return;
     }
     
-
+    pagele_data = response.pagele_data;
+    
     // Get user progress data if available
     const userPagele = response.user_pagele;
     const currentPageleFilename = response.user_pagele?.current_pagele || pageleFilename;
