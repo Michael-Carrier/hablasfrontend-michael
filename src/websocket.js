@@ -3,9 +3,6 @@ let socket = null;
 let isConnecting = false;
 let pendingMessages = [];
 
-let currentReviewQueue = [];
-let currentReviewIndex = 0;
-
 function createWebSocketConnection() {
     if (isConnecting) {
         console.log('Connection already in progress, returning existing socket');
