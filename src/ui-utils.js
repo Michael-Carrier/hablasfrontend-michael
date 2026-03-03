@@ -467,9 +467,13 @@ function hideDrawerWithBackdrop() {
 }
 
 function handleDrawerBackdropClick(e) {
-    // Only close if clicking on the backdrop itself, not the drawer content
+    // If it's the standard backdrop (settings)
     if (e.target.id === 'drawer-backdrop') {
         closeSettings();
+    }
+    // If it's your new Michael Progress overlay
+    if (e.target.id === 'progress-modal-overlay') {
+        closeMichaelProgress();
     }
 }
 
@@ -727,3 +731,56 @@ function triggerCelebration() {
     console.log('No celebration this time (25% chance)');
     return false; // No celebration
 }
+
+//michael crap
+
+// This MUST be at the very bottom, outside of other functions
+window.openMichaelProgress = function() {
+    const modal = document.getElementById('progress-modal');
+    const overlay = document.getElementById('progress-modal-overlay');
+
+    if (modal && overlay) {
+        overlay.style.zIndex = "200000"; 
+        modal.style.zIndex = "200001";
+        
+        overlay.style.display = 'block';
+        modal.style.display = 'flex';
+
+        // 1. This closes the report when clicking the BACKGROUND
+        overlay.onclick = function() {
+            window.closeMichaelProgress();
+        };
+
+        // 2. THIS IS THE FIX: This prevents clicking INSIDE the modal 
+        // from triggering the overlay's close function.
+        modal.onclick = function(event) {
+            event.stopPropagation();
+        };
+    }
+
+    // ... your socket request code ...
+    const request = {
+        task: "get_michael_stats",
+        username: window.currentUserEmail || localStorage.getItem('username')
+    };
+    if (typeof sendSocketMessage === 'function') sendSocketMessage(request);
+};
+
+
+window.closeMichaelProgress = function() {
+    console.log("🔒 Closing Progress Report");
+    const modal = document.getElementById('progress-modal');
+    const overlay = document.getElementById('progress-modal-overlay');
+    const drawerBackdrop = document.querySelector('.drawer-backdrop');
+    const drawer = document.querySelector('.drawer');
+
+    // Hide the report layers
+    if(modal) modal.style.display = 'none';
+    if(overlay) overlay.style.display = 'none';
+
+    // Restore the Settings blur ONLY if the settings drawer is still open
+    if (drawer && drawer.classList.contains('open') && drawerBackdrop) {
+        drawerBackdrop.style.backdropFilter = 'blur(8px)';
+        drawerBackdrop.style.webkitBackdropFilter = 'blur(8px)';
+    }
+};

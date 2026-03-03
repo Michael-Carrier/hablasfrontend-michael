@@ -2,6 +2,8 @@
 const TESTING_MODE = false;
 const EVENT_TYPE = ('ontouchstart' in window) ? 'touchend' : 'click';
 const maxLogs = 1000;
+console.log("michael TEST-1.04");
+
 
 // App State Variables
 let isShowingDailyPages = false;
