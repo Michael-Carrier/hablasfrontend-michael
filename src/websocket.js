@@ -230,3 +230,15 @@ function createBlobAndConnect() {
 function initializeWebSocket() {
     socket = createWebSocketConnection();
 }
+
+
+function requestWordStats() {
+    if (window.socket && window.socket.readyState === WebSocket.OPEN) {
+        const statsRequest = {
+            task: "get_word_stats",
+            username: window.currentUserEmail // or wherever you store the username
+        };
+        window.socket.send(JSON.stringify(statsRequest));
+        console.log("[WS] Requesting word stats...");
+    }
+}
