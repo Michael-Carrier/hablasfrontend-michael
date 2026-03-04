@@ -185,6 +185,27 @@ async function startA1Review() {
     });
 }
 
+function openMichaelProgress() {
+    document.getElementById("settings-drawer").classList.remove("open");
+    sendSocketMessage({
+        task: "get_michael_stats",
+        username: (window.userInfo && window.userInfo.username) || localStorage.getItem('username'),
+        token: localStorage.getItem('token')
+    });
+    document.getElementById("michael-progress-modal").style.display = "block";
+}
+
+function closeMichaelProgress() {
+    document.getElementById("michael-progress-modal").style.display = "none";
+}
+
+
+function closeMiniPage() {
+    document.getElementById('mini-page-overlay').style.display = 'none';
+}
+
+
+
 async function startGeneralReview() {
     const lang = window.userInfo?.preferred_language || localStorage.getItem('preferred_language') || 'en';
     pageleFilename = `general-${lang}-review.json`;
@@ -674,14 +695,6 @@ if (response.task === "michael_stats_response") {
         return;        
     }
         
-function closeMiniPage() {
-    document.getElementById('mini-page-overlay').style.display = 'none';
-}
-
-function closeMichaelProgress() {
-    document.getElementById('progress-modal').style.display = 'none';
-    document.getElementById('drawer-backdrop').style.display = 'none'; // Closes backdrop too
-}
     
     // Handle error responses
     if (response.error) {
