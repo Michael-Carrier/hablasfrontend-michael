@@ -1,0 +1,85 @@
+[1mdiff --git a/index.html b/index.html[m
+[1mindex 46274c1..a701c62 100644[m
+[1m--- a/index.html[m
+[1m+++ b/index.html[m
+[36m@@ -438,20 +438,7 @@[m
+     <div style="margin-top: 20px; display: flex; justify-content: center;">[m
+         <button onclick="closeMichaelProgress()" style="width: 100%; padding: 10px; cursor: pointer; background: #e74c3c; color: white; border: none; border-radius: 6px; font-weight: bold;">Close</button>[m
+     </div>[m
+[31m-</div>        [m
+[31m-        <hr>[m
+[31m-        [m
+[31m-        <div style="height: auto; overflow: visible;">[m
+[31m-            <ul id="tricky-words-list" style="list-style: none; padding: 0;">[m
+[31m-                <li>No data yet.</li>[m
+[31m-            </ul>[m
+[31m-        </div>[m
+[31m-[m
+[31m-        <div style="margin-top: 20px; display: flex; justify-content: flex-start;">[m
+[31m-            <button onclick="closeMichaelProgress()" style="padding: 8px 16px; cursor: pointer; background: #e74c3c; color: white; border: none; border-radius: 4px;">Close</button>[m
+[31m-        </div>[m
+[31m-    </div>[m
+[31m-[m
+[32m+[m[32m</div>[m
+ [m
+ <div id="recommend-modal" class="modal">[m
+     <div class="modal-content">[m
+[1mdiff --git a/src/response-handlers.js b/src/response-handlers.js[m
+[1mindex 8db871b..6893ed9 100644[m
+[1m--- a/src/response-handlers.js[m
+[1m+++ b/src/response-handlers.js[m
+[36m@@ -192,14 +192,13 @@[m [mfunction openMichaelProgress() {[m
+         username: (window.userInfo && window.userInfo.username) || localStorage.getItem('username'),[m
+         token: localStorage.getItem('token')[m
+     });[m
+[31m-    document.getElementById("michael-progress-modal").style.display = "block";[m
+[32m+[m[32m    document.getElementById("progress-modal").style.display = "flex";[m
+ }[m
+ [m
+ function closeMichaelProgress() {[m
+[31m-    document.getElementById("michael-progress-modal").style.display = "none";[m
+[32m+[m[32m    document.getElementById("progress-modal").style.display = "none";[m
+ }[m
+ [m
+[31m-[m
+ function closeMiniPage() {[m
+     document.getElementById('mini-page-overlay').style.display = 'none';[m
+ }[m
+[36m@@ -272,22 +271,6 @@[m [mwindow.closeMiniPage = function() {[m
+     document.getElementById('mini-page-overlay').style.display = 'none';[m
+ };[m
+ [m
+[31m-function handlePredSentence(response) {[m
+[31m-    const predHtml = response.pred_sentence || response.predicted_sentence;[m
+[31m-[m
+[31m-    const wrongWords = extractWrongWords(predHtml);   // MUST return array of {expected, pronounced}[m
+[31m-    const correctWords = extractCorrectWords(predHtml); // array of strings[m
+[31m-[m
+[31m-    console.log("✅ Correct:", correctWords);[m
+[31m-    console.log("❌ Incorrect:", wrongWords);[m
+[31m-[m
+[31m-    window.pronunciationBank = window.pronunciationBank || [];[m
+[31m-    window.pronunciationBank.push({[m
+[31m-        timestamp: Date.now(),[m
+[31m-        correct: correctWords,[m
+[31m-        incorrect: wrongWords[m
+[31m-    });[m
+[31m-}[m
+ [m
+ [m
+ function normalizeWord(word) {[m
+[1mdiff --git a/src/websocket.js b/src/websocket.js[m
+[1mindex c62fd71..6ee1e43 100644[m
+[1m--- a/src/websocket.js[m
+[1m+++ b/src/websocket.js[m
+[36m@@ -13,8 +13,8 @@[m [mfunction createWebSocketConnection() {[m
+     }[m
+ [m
+     isConnecting = true;[m
+[31m-    const newSocket = new WebSocket('wss://carriertech.uk:8675');[m
+[31m-    //const newSocket = new WebSocket('ws://localhost:8675');[m
+[32m+[m[32m    //const newSocket = new WebSocket('wss://carriertech.uk:8675');[m
+[32m+[m[32m    const newSocket = new WebSocket('ws://localhost:8675');[m
+     [m
+     newSocket.addEventListener('open', (event) => {[m
+         console.log('WebSocket connection established');[m
