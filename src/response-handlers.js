@@ -192,13 +192,12 @@ function openMichaelProgress() {
         username: (window.userInfo && window.userInfo.username) || localStorage.getItem('username'),
         token: localStorage.getItem('token')
     });
-    document.getElementById("michael-progress-modal").style.display = "block";
+    document.getElementById("progress-modal").style.display = "flex";
 }
 
 function closeMichaelProgress() {
-    document.getElementById("michael-progress-modal").style.display = "none";
+    document.getElementById("progress-modal").style.display = "none";
 }
-
 
 function closeMiniPage() {
     document.getElementById('mini-page-overlay').style.display = 'none';
@@ -222,7 +221,7 @@ async function startGeneralReview() {
 // Optional: Close modal if user clicks outside of the box
 window.onclick = function(event) {
     const reviewModal = document.getElementById("review-modal");
-    const progressModal = document.getElementById("michael-progress-modal"); // or whatever your name is
+    const progressModal = document.getElementById("progress-modal");
     
     if (event.target == reviewModal) {
         reviewModal.style.display = "none";
@@ -272,22 +271,6 @@ window.closeMiniPage = function() {
     document.getElementById('mini-page-overlay').style.display = 'none';
 };
 
-function handlePredSentence(response) {
-    const predHtml = response.pred_sentence || response.predicted_sentence;
-
-    const wrongWords = extractWrongWords(predHtml);   // MUST return array of {expected, pronounced}
-    const correctWords = extractCorrectWords(predHtml); // array of strings
-
-    console.log("✅ Correct:", correctWords);
-    console.log("❌ Incorrect:", wrongWords);
-
-    window.pronunciationBank = window.pronunciationBank || [];
-    window.pronunciationBank.push({
-        timestamp: Date.now(),
-        correct: correctWords,
-        incorrect: wrongWords
-    });
-}
 
 
 function normalizeWord(word) {
