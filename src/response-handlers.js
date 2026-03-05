@@ -221,7 +221,7 @@ async function startGeneralReview() {
 // Optional: Close modal if user clicks outside of the box
 window.onclick = function(event) {
     const reviewModal = document.getElementById("review-modal");
-    const progressModal = document.getElementById("michael-progress-modal"); // or whatever your name is
+    const progressModal = document.getElementById("progress-modal");
     
     if (event.target == reviewModal) {
         reviewModal.style.display = "none";

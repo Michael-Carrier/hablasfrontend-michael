@@ -13,8 +13,8 @@ function createWebSocketConnection() {
     }
 
     isConnecting = true;
-    //const newSocket = new WebSocket('wss://carriertech.uk:8675');
-    const newSocket = new WebSocket('ws://localhost:8675');
+    const newSocket = new WebSocket('wss://carriertech.uk:8675');
+    //const newSocket = new WebSocket('ws://localhost:8675');
     
     newSocket.addEventListener('open', (event) => {
         console.log('WebSocket connection established');
